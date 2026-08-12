@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Media Kit — free, no sign-up</title>
+<meta name="description" content="Build a creator media kit in five minutes. Share it as a link or download a PDF. Free, no account, nothing stored on a server.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter+Tight:wght@400;500;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFFFF; --ink:#131114; --mut:#6C6A70; --line:#E4E1DC; --soft:#F6F4F1;
+    --ui:#3B2FD9; --ui-soft:#EEECFD;    /* editor chrome — never changes */
+    --kit:#3B2FD9;                      /* kit accent, as a fill */
+    --kit-ink:#FFFFFF;                  /* text drawn on that fill */
+    --kit-text:#3B2FD9;                 /* accent as text on white */
+    --kit-dark:#8F86F5;                 /* accent as text on the dark hero */
+    --req:#C0392B;
+  }
+  *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-size:16px;
+       font-family:'Inter Tight',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  .disp{font-family:'Bricolage Grotesque',sans-serif}
+  .hide{display:none!important}
+
+  .wrap{max-width:1180px;margin:0 auto;padding:0 18px 130px}
+  .boot{display:none;background:#FBEFEC;border:1px solid #E8C4BC;color:#8A3324;
+        border-radius:9px;padding:12px 14px;font-size:13px;margin:10px 0}
+  .boot.on{display:block}
+
+  .top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+       padding:30px 0 22px;flex-wrap:wrap}
+  .logo h1{margin:0;font-size:38px;font-weight:800;letter-spacing:-.04em;line-height:1}
+  .logo .t{font-size:13.5px;color:var(--mut);display:block;margin-top:7px}
+  .pill{font-size:12px;color:var(--ui);background:var(--ui-soft);border:1px solid #DAD6FB;
+        border-radius:999px;padding:7px 14px;font-weight:600}
+  @media(max-width:600px){.logo h1{font-size:30px}}
+
+  .cols{display:grid;grid-template-columns:1fr;gap:24px}
+  @media(min-width:1000px){
+    .cols{grid-template-columns:minmax(0,430px) minmax(0,1fr);gap:34px;align-items:start}
+    .kitPane{position:sticky;top:20px}
+  }
+
+  details.card{background:#fff;border:1px solid var(--line);border-radius:12px;
+               margin-bottom:12px;overflow:hidden}
+  details.card>summary{list-style:none;cursor:pointer;padding:15px 16px;display:flex;
+    align-items:center;justify-content:space-between;gap:10px;font-size:14.5px;font-weight:600}
+  summary::-webkit-details-marker{display:none}
+  .num{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;
+       border-radius:6px;background:var(--ui-soft);color:var(--ui);font-size:11.5px;
+       font-weight:700;margin-right:9px}
+  .chev{color:var(--mut);font-size:12px;transition:transform .18s}
+  details[open] .chev{transform:rotate(90deg)}
+  details[open]>summary{border-bottom:1px solid var(--line)}
+  .body{padding:16px}
+  .saved{font-size:11.5px;color:var(--mut);font-weight:500}
+
+  label{display:block;font-size:10.5px;font-weight:600;letter-spacing:.1em;
+        text-transform:uppercase;color:var(--mut);margin:0 0 5px}
+  label .norm{text-transform:none;letter-spacing:0;font-weight:400}
+  .rq{color:var(--req);margin-left:2px}
+  input,textarea,select{width:100%;font-family:inherit;font-size:15px;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 11px;
+    -webkit-appearance:none;appearance:none}
+  textarea{min-height:62px;resize:vertical;line-height:1.45}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--ui);
+    box-shadow:0 0 0 3px var(--ui-soft)}
+  .f{margin-bottom:12px}
+  .r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .r3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  @media(max-width:430px){.r3{grid-template-columns:1fr 1fr}}
+  .hint{font-size:11.5px;color:var(--mut);margin-top:5px;line-height:1.5}
+  select{background-image:linear-gradient(45deg,transparent 50%,var(--mut) 50%),
+    linear-gradient(135deg,var(--mut) 50%,transparent 50%);
+    background-position:calc(100% - 17px) 52%,calc(100% - 12px) 52%;
+    background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px}
+  .calc{background:var(--ui-soft);border:1px solid #DAD6FB;border-radius:8px;
+        padding:10px 12px;font-size:12.5px;color:#2A2196;line-height:1.55;margin-bottom:12px}
+  .calc b{font-weight:700}
+
+  .btn{font-family:inherit;font-size:14px;font-weight:600;padding:11px 16px;border-radius:9px;
+       border:1px solid var(--ui);background:var(--ui);color:#fff;cursor:pointer}
+  .btn:hover{filter:brightness(.92)}
+  .btn.g{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn.g:hover{background:var(--soft);border-color:var(--ink)}
+  .btn.w{width:100%}
+  .btn.s{padding:8px 13px;font-size:13px}
+
+  .rateRow{border:1px solid var(--line);border-radius:9px;padding:11px;margin-bottom:9px;
+           background:var(--soft);display:grid;grid-template-columns:1fr 124px auto;gap:9px;align-items:end}
+  .rateRow .rm{width:34px;height:38px;border:1px solid var(--line);background:#fff;
+               border-radius:7px;color:var(--mut);cursor:pointer;font-size:15px}
+  .work{border:1px solid var(--line);border-radius:9px;padding:11px;margin-bottom:9px;background:var(--soft)}
+
+  .opt{display:flex;gap:10px;align-items:flex-start;padding:11px;border:1px solid var(--line);
+       border-radius:9px;margin-bottom:9px;background:var(--soft)}
+  .opt input[type=checkbox]{width:18px;height:18px;flex:0 0 auto;margin-top:2px;
+       appearance:auto;-webkit-appearance:checkbox}
+  .opt .txt{flex:1 1 auto;min-width:0}
+  .opt .txt b{font-size:14px;font-weight:600;display:block}
+  .opt .txt span{font-size:12px;color:var(--mut);line-height:1.45;display:block;margin-top:2px}
+  .opt select{margin-top:8px}
+
+  .themes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:13px}
+  .th{border:1.5px solid var(--line);border-radius:9px;padding:0;cursor:pointer;
+      background:#fff;overflow:hidden;font-family:inherit}
+  .th[aria-pressed="true"]{border-color:var(--ui);box-shadow:0 0 0 3px var(--ui-soft)}
+  .th .sw{height:32px;display:block}
+  .th .nm{font-size:10.5px;font-weight:600;padding:6px 4px;color:var(--mut);display:block}
+  .swatches{display:flex;gap:7px;flex-wrap:wrap}
+  .sw2{width:27px;height:27px;border-radius:50%;border:2px solid transparent;cursor:pointer;
+       padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+  .sw2[aria-pressed="true"]{border-color:var(--ink)}
+
+  /* ==================== THE KIT ==================== */
+  .kitHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+  .kitHead span{font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)}
+  .kit{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+
+  .hero{background:var(--ink);color:#F7F6F8;padding:34px 32px 30px}
+  .hero .who{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+  .hero .av{width:64px;height:64px;border-radius:50%;object-fit:cover;flex:0 0 auto;
+            background:#2A272C;border:2px solid rgba(255,255,255,.16)}
+  .hero h2{margin:0;font-size:29px;font-weight:800;letter-spacing:-.035em;line-height:1.05}
+  .hero .handle{font-size:14px;font-weight:600;margin-top:5px;display:inline-block;
+                text-decoration:none;color:var(--kit-dark);border-bottom:1px solid transparent}
+  .hero .handle:hover{border-bottom-color:currentColor}
+  .hero .tag{font-size:14px;color:#BEBBC2;line-height:1.55;max-width:54ch}
+  .hero .cats{display:flex;gap:6px;flex-wrap:wrap;margin-top:13px}
+  .hero .cats i{font-style:normal;font-size:11.5px;font-weight:600;background:rgba(255,255,255,.12);
+                border-radius:999px;padding:5px 11px;color:#EDEBEF}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:rgba(255,255,255,.12);
+         border-radius:10px;overflow:hidden;margin-top:22px}
+  @media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stats div{background:var(--ink);padding:15px 13px}
+  .stats .v{font-family:'Bricolage Grotesque',sans-serif;font-size:25px;font-weight:800;
+            letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+  .stats .k{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+            color:#9C99A1;margin-top:4px}
+
+  /* --- light --- */
+  .kit[data-t="light"] .hero{background:#fff;color:var(--ink);border-bottom:1px solid var(--line)}
+  .kit[data-t="light"] .hero .handle{color:var(--kit-text)}
+  .kit[data-t="light"] .hero .tag{color:var(--mut)}
+  .kit[data-t="light"] .hero .cats i{background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+  .kit[data-t="light"] .stats{background:var(--line)}
+  .kit[data-t="light"] .stats div{background:#fff}
+  .kit[data-t="light"] .stats .v{color:var(--kit-text)}
+  .kit[data-t="light"] .stats .k{color:var(--mut)}
+  .kit[data-t="light"] .hero .av{background:var(--soft);border-color:var(--line)}
+
+  /* --- colour --- */
+  .kit[data-t="colour"] .hero{background:var(--kit);color:var(--kit-ink)}
+  .kit[data-t="colour"] .hero .handle{color:var(--kit-ink);opacity:.9}
+  .kit[data-t="colour"] .hero .tag{color:var(--kit-ink);opacity:.85}
+  .kit[data-t="colour"] .hero .cats i{background:rgba(255,255,255,.18);color:var(--kit-ink)}
+  .kit[data-t="colour"] .stats{background:rgba(255,255,255,.25)}
+  .kit[data-t="colour"] .stats div{background:var(--kit)}
+  .kit[data-t="colour"] .stats .v{color:var(--kit-ink)}
+  .kit[data-t="colour"] .stats .k{color:var(--kit-ink);opacity:.78}
+  .kit[data-t="colour"] .hero .av{border-color:rgba(255,255,255,.35)}
+
+  /* --- editorial: rules and space, no boxes --- */
+  .kit[data-t="editorial"] .hero{background:#fff;color:var(--ink);padding:44px 40px 0;
+    border-bottom:0}
+  .kit[data-t="editorial"] .hero .who{display:block;margin-bottom:0}
+  .kit[data-t="editorial"] .hero .av{width:56px;height:56px;margin-bottom:20px;
+    background:var(--soft);border:1px solid var(--line)}
+  .kit[data-t="editorial"] h2{font-family:'Newsreader',Georgia,serif;font-weight:300;
+    font-size:46px;letter-spacing:-.02em;line-height:1.02}
+  @media(max-width:600px){.kit[data-t="editorial"] h2{font-size:34px}}
+  .kit[data-t="editorial"] .hero .handle{color:var(--kit-text);font-size:13px;
+    letter-spacing:.04em;margin-top:9px}
+  .kit[data-t="editorial"] .hero .tag{font-family:'Newsreader',Georgia,serif;font-size:17px;
+    line-height:1.55;color:#45424A;margin-top:18px;max-width:46ch}
+  .kit[data-t="editorial"] .hero .cats{margin-top:18px}
+  .kit[data-t="editorial"] .hero .cats i{background:transparent;border:0;padding:0;
+    color:var(--mut);font-size:11px;font-weight:600;letter-spacing:.13em;text-transform:uppercase}
+  .kit[data-t="editorial"] .hero .cats i+i::before{content:"/ ";color:var(--line);margin-right:6px}
+  .kit[data-t="editorial"] .hero .cats{gap:11px}
+  .kit[data-t="editorial"] .stats{display:flex;background:transparent;border-radius:0;
+    gap:0;margin:34px -40px 0;padding:0 40px;border-top:1px solid var(--ink)}
+  .kit[data-t="editorial"] .stats div{background:transparent;flex:1 1 0;padding:20px 16px 24px 0}
+  .kit[data-t="editorial"] .stats .v{font-family:'Newsreader',Georgia,serif;font-weight:400;
+    font-size:31px;letter-spacing:-.01em;color:var(--ink)}
+  .kit[data-t="editorial"] .stats .k{color:var(--mut);letter-spacing:.11em;font-size:9.5px}
+  @media(max-width:560px){
+    .kit[data-t="editorial"] .stats{flex-wrap:wrap}
+    .kit[data-t="editorial"] .stats div{flex:1 1 44%}
+  }
+  .kit[data-t="editorial"] .sec{padding:30px 40px}
+  .kit[data-t="editorial"] .sec h3{font-family:'Inter Tight',sans-serif}
+  .kit[data-t="editorial"] .aud .v,.kit[data-t="editorial"] .wk .t{font-family:'Newsreader',Georgia,serif;
+    font-weight:400;font-size:21px;letter-spacing:-.01em}
+  .kit[data-t="editorial"] .wk{border:0;border-top:1px solid var(--line);border-radius:0;padding:14px 0 0}
+  .kit[data-t="editorial"] .rc{border:0;border-top:1px solid var(--ink);border-radius:0;padding:15px 0 0}
+  .kit[data-t="editorial"] .rc .p{font-family:'Newsreader',Georgia,serif;font-weight:400;font-size:29px}
+  .kit[data-t="editorial"] .brands i{background:transparent;border:0;padding:0;font-size:14px}
+  .kit[data-t="editorial"] .brands i+i::before{content:"\00B7";margin-right:9px;color:var(--line)}
+  .kit[data-t="editorial"] .brands{gap:11px}
+  .kit[data-t="editorial"] .cta{background:#fff;border-top:1px solid var(--ink);padding:26px 40px}
+  .kit[data-t="editorial"] .updated{padding:14px 40px}
+
+  .sec{padding:28px 32px;border-top:1px solid var(--line)}
+  .sec h3{margin:0 0 16px;font-size:11px;font-weight:700;letter-spacing:.13em;
+          text-transform:uppercase;color:var(--mut)}
+
+  .aud{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  @media(max-width:560px){.aud{grid-template-columns:1fr 1fr}}
+  .aud .v{font-size:19px;font-weight:600;letter-spacing:-.02em;line-height:1.3}
+  .aud .k{font-size:11px;color:var(--mut);margin-top:4px}
+
+  .works{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:560px){.works{grid-template-columns:1fr}}
+  .wk{border:1px solid var(--line);border-radius:10px;padding:13px;text-decoration:none;color:inherit;display:block}
+  .wk .t{font-size:13.5px;font-weight:600;line-height:1.35}
+  .wk .n{font-size:12px;color:var(--kit-text);font-weight:600;margin-top:6px}
+
+  .brands{display:flex;flex-wrap:wrap;gap:7px}
+  .brands i{font-style:normal;font-size:12.5px;font-weight:500;background:var(--soft);
+            border:1px solid var(--line);border-radius:999px;padding:6px 13px}
+
+  .rateGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+  @media(max-width:600px){.rateGrid{grid-template-columns:1fr}}
+  .rc{border:1px solid var(--line);border-radius:11px;padding:16px 15px;background:#fff}
+  .rc .d{font-size:13px;font-weight:600;line-height:1.35}
+  .rc .p{font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;
+         letter-spacing:-.035em;color:var(--kit-text);margin-top:9px;font-variant-numeric:tabular-nums}
+  .rc .bd{font-size:11px;color:var(--mut);margin-top:8px;line-height:1.65}
+  .rc .bd .ln{display:flex;justify-content:space-between;gap:10px}
+  .rc .bd .ln.tot{color:var(--ink);font-weight:600;border-top:1px solid var(--line);
+                  margin-top:5px;padding-top:5px}
+  .incl{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+        font-size:12.5px;color:var(--mut);line-height:1.75}
+  .incl b{color:var(--ink);font-weight:600}
+
+  .cta{padding:24px 32px;background:var(--soft);border-top:1px solid var(--line);
+       display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:600px){.cta{grid-template-columns:1fr 1fr}}
+  .cta .lbl{font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--mut)}
+  .cta .val{font-size:14.5px;font-weight:600;margin-top:4px;word-break:break-word}
+  .updated{font-size:11.5px;color:var(--mut);padding:13px 32px;border-top:1px solid var(--line);
+           display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+
+  .bar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.95);
+       backdrop-filter:blur(10px);border-top:1px solid var(--line);
+       padding:11px 18px calc(11px + env(safe-area-inset-bottom));z-index:40}
+  .bar .in{max-width:1180px;margin:0 auto;display:flex;gap:9px;align-items:center}
+  .bar .lab{flex:1 1 auto;min-width:0}
+  .bar .lab .k{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+  .bar .lab .v{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .sheet{position:fixed;inset:0;background:rgba(19,17,20,.5);z-index:60;display:none;
+         align-items:flex-end;justify-content:center}
+  .sheet.on{display:flex}
+  .sheet .in{background:#fff;width:100%;max-width:520px;border-radius:16px 16px 0 0;
+    padding:24px 20px calc(24px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto}
+  @media(min-width:640px){.sheet{align-items:center}.sheet .in{border-radius:16px}}
+  .sheet h3{margin:0 0 8px;font-size:19px;font-weight:700;letter-spacing:-.02em}
+  .sheet p{margin:0 0 14px;font-size:14px;line-height:1.55;color:var(--mut)}
+  .linkbox{font-family:ui-monospace,monospace;font-size:11.5px;background:var(--soft);
+    border:1px solid var(--line);border-radius:8px;padding:10px;word-break:break-all;
+    max-height:110px;overflow-y:auto;margin-bottom:12px}
+  .acts{display:flex;gap:9px;margin-top:6px}
+
+  .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--ink);
+    color:#fff;font-size:13.5px;font-weight:500;padding:11px 18px;border-radius:999px;z-index:70;
+    opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}
+  .toast.on{opacity:1}
+
+  .foot{text-align:center;font-size:12px;color:var(--mut);line-height:1.75;padding:30px 0 12px}
+  .credit{max-width:460px;margin:0 auto;background:#fff;border:1px solid var(--line);
+          border-radius:12px;padding:17px 18px;text-align:center}
+  .credit .w{font-size:14.5px;font-weight:600}
+  .credit .m{font-size:12.5px;color:var(--mut);line-height:1.6;margin:6px 0 13px}
+  .credit .l{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+  .credit a{font-size:12.5px;font-weight:600;text-decoration:none;color:var(--ui);
+            background:var(--ui-soft);border:1px solid #DAD6FB;border-radius:999px;padding:7px 14px}
+
+  /* Shown only to a brand viewing a shared kit. Carries no personal name. */
+  .madewith{display:none;text-align:center;font-size:11.5px;color:var(--mut);padding:24px 0 6px}
+  .madewith a{color:var(--mut);text-decoration:underline;text-underline-offset:2px}
+  body.viewing .madewith{display:block}
+  body.viewing .editPane,body.viewing .bar,body.viewing .foot,
+  body.viewing .credit,body.viewing .kitHead,body.viewing .top{display:none!important}
+  body.viewing .cols{grid-template-columns:1fr}
+  body.viewing .wrap{max-width:880px;padding:26px 18px 40px}
+  body.viewing .kitPane{position:static}
+
+  @media print{
+    @page{size:A4;margin:10mm}
+    .top,.editPane,.bar,.sheet,.toast,.foot,.credit,.kitHead,.boot,.madewith{display:none!important}
+    .wrap{padding:0;max-width:none}
+    .cols{display:block}
+    .kitPane{position:static!important}
+    .kit{border:0;border-radius:0}
+    .hero,.stats div,.rc .p{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .sec,.cta,.rc{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="boot" id="bootErr"></div>
+
+  <div class="top">
+    <div class="logo">
+      <h1 class="disp">Media Kit</h1>
+      <span class="t">Build it in five minutes. Free, no sign-up, no account.</span>
+    </div>
+    <div class="pill">Nothing leaves your device</div>
+  </div>
+
+  <div class="cols">
+    <div class="editPane">
+
+      <details class="card" open id="s1">
+        <summary><span><span class="num">1</span>You <span class="saved" id="savedTag"></span></span><span class="chev">&#9656;</span></summary>
+        <div class="body">
+          <div class="f"><label for="name">Name<span class="rq">*</span></label>
+            <input id="name" placeholder="Enter your name"></div>
+          <div class="r2">
+            <div class="f"><label for="handle">Instagram handle<span class="rq">*</span></label>
+              <input id="handle" placeholder="yourhandle"></div>
+            <div class="f"><label for="city">Based in</label>
+              <input id="city" placeholder="Enter your city"></div>
+          </div>
+          <div class="f"><label for="tagline">One line about you</label>
+            <textarea id="tagline" placeholder="What you make, and who it's for"></textarea></div>
+          <div class="f"><label for="cats">Categories</label>
+            <input id="cats" placeholder="Design, Tech, Lifestyle">
+            <div class="hint">Comma separated.</div></div>
+          <div class="f" style="margin-bottom:0"><label for="photo">Profile photo</label>
+            <input id="photo" type="file" accept="image/*" style="padding:8px">
+            <div class="hint" id="photoState"></div></div>
+        </div>
+      </details>
+
+      <details class="card" open>
+        <summary><span><span class="num">2</span>Numbers</span><span class="chev">&#9656;</span></summary>
+        <div class="body">
+          <p class="hint" style="margin:0 0 13px">Instagram &rarr; Insights &rarr; last 30 days.
+            Instagram blocks websites from reading these, so they're typed once and saved
+            here. The date you last changed them is shown to the brand.</p>
+          <div class="r2">
+            <div class="f"><label for="followers">Followers<span class="rq">*</span></label>
+              <input id="followers" inputmode="numeric" placeholder="e.g. 24800"></div>
+            <div class="f"><label for="reach">Avg reel views</label>
+              <input id="reach" inputmode="numeric" placeholder="e.g. 62000"></div>
+          </div>
+          <div class="r2">
+            <div class="f"><label for="likes">Avg likes <span class="norm">per reel</span></label>
+              <input id="likes" inputmode="numeric" placeholder="e.g. 1400"></div>
+            <div class="f"><label for="comments">Avg comments</label>
+              <input id="comments" inputmode="numeric" placeholder="e.g. 60"></div>
+          </div>
+          <div class="calc" id="erCalc"></div>
+          <div class="r2">
+            <div class="f"><label for="storyviews">Avg story views</label>
+              <input id="storyviews" inputmode="numeric" placeholder="e.g. 3400"></div>
+            <div class="f"><label for="engagement">Engagement % <span class="norm">override</span></label>
+              <input id="engagement" inputmode="decimal" placeholder="auto"></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary><span><span class="num">3</span>Audience</span><span class="chev">&#9656;</span></summary>
+        <div class="body">
+          <p class="hint" style="margin:0 0 13px">This barely changes month to month,
+            so it's saved and you won't be asked again.</p>
+          <div class="r2">
+            <div class="f"><label for="age">Top age group</label>
+              <input id="age" placeholder="25-34"></div>
+            <div class="f"><label for="womenPct">Women %</label>
+              <input id="womenPct" inputmode="numeric" placeholder="e.g. 61"></div>
+          </div>
+          <div class="calc" id="genderCalc">Enter one number &mdash; the other works itself out.</div>
+          <div class="f"><label for="cities">Top cities in India <span class="norm">optional</span></label>
+            <input id="cities" placeholder="Bengaluru, Mumbai, Delhi"></div>
+          <div class="f" style="margin-bottom:0"><label for="countries">Top countries <span class="norm">optional</span></label>
+            <input id="countries" placeholder="India, USA, UAE"></div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary><span><span class="num">4</span>Work</span><span class="chev">&#9656;</span></summary>
+        <div class="body">
+          <label>Top 3 pieces</label>
+          <div id="works"></div>
+          <button class="btn g w s" type="button" onclick="addWork()">+ Add a piece</button>
+          <div class="f" style="margin:15px 0 0"><label for="brands">Brands you've worked with</label>
+            <input id="brands" placeholder="Comma separated"></div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary><span><span class="num">5</span>Rates</span><span class="chev">&#9656;</span></summary>
+        <div class="body">
+          <div class="r2">
+            <div class="f"><label for="cur">Currency</label><select id="cur"></select></div>
+            <div class="f"><label for="perk">Rate per 1,000 followers</label>
+              <input id="perk" inputmode="numeric" placeholder="250"></div>
+          </div>
+          <div class="calc" id="sugCalc">Fill in your numbers, then tap suggest.</div>
+          <button class="btn w s" type="button" onclick="suggestRates()"
+            style="margin-bottom:14px">Suggest rates from my numbers</button>
+
+          <label>Your rate card</label>
+          <div id="rates"></div>
+          <button class="btn g w s" type="button" onclick="addRate()">+ Add a deliverable</button>
+
+          <label style="margin-top:17px">What the brand is asking for</label>
+          <div class="opt">
+            <input type="checkbox" id="optAds" onchange="render()">
+            <div class="txt"><b>They want to run it as a paid ad</b>
+              <span>Your content used in their advertising, not just posted on your page.</span>
+              <select id="adsDur" onchange="render()">
+                <option value="1.5">For 3 months (+50%)</option>
+                <option value="1.8">For 6 months (+80%)</option>
+                <option value="2.2">For 1 year (+120%)</option>
+              </select></div>
+          </div>
+          <div class="opt">
+            <input type="checkbox" id="optExcl" onchange="render()">
+            <div class="txt"><b>They want you to skip their competitors</b>
+              <span>You agree not to work with similar brands for a while.</span>
+              <select id="exclDur" onchange="render()">
+                <option value="1.3">For 3 months (+30%)</option>
+                <option value="1.6">For 6 months (+60%)</option>
+              </select></div>
+          </div>
+          <div class="opt">
+            <input type="checkbox" id="optWhite" onchange="render()">
+            <div class="txt"><b>They want to run ads from your handle</b>
+              <span>Ads that look like they came from your account. Usually called whitelisting. (+30%)</span></div>
+          </div>
+
+          <div class="f" style="margin:14px 0 0"><label for="terms">Payment terms</label>
+            <input id="terms" placeholder="50% advance, balance within 15 days of going live"></div>
+        </div>
+      </details>
+
+      <details class="card">
+        <summary><span><span class="num">6</span>Contact &amp; design</span><span class="chev">&#9656;</span></summary>
+        <div class="body">
+          <div class="r2">
+            <div class="f"><label for="email">Email<span class="rq">*</span></label>
+              <input id="email" type="email" placeholder="Enter your email"></div>
+            <div class="f"><label for="phone">Phone <span class="norm">optional</span></label>
+              <input id="phone" placeholder="Enter your number"></div>
+          </div>
+          <div class="f"><label for="site">Website <span class="norm">optional</span></label>
+            <input id="site" placeholder="yoursite.com"></div>
+          <label>Kit design</label>
+          <div class="themes" id="themes"></div>
+          <label>Kit accent colour</label>
+          <div class="swatches" id="swatches"></div>
+          <div class="hint">This changes only the kit a brand sees, never this editor.</div>
+          <button class="btn g w s" type="button" style="margin-top:14px"
+            onclick="clearSaved()">Clear everything saved on this device</button>
+        </div>
+      </details>
+    </div>
+
+    <div class="kitPane" id="kitPane">
+      <div class="kitHead"><span>Preview &mdash; what a brand sees</span></div>
+
+      <div class="kit" id="kit" data-t="dark">
+        <div class="hero">
+          <div class="who">
+            <img class="av" id="kAv" alt="" style="display:none">
+            <div><h2 class="disp" id="kName">Your name</h2>
+              <a class="handle" id="kHandle" target="_blank" rel="noopener">@handle</a></div>
+          </div>
+          <div class="tag" id="kTag"></div>
+          <div class="cats" id="kCats"></div>
+          <div class="stats" id="kStats"></div>
+        </div>
+
+        <div class="sec" id="secAud"><h3>Audience</h3><div class="aud" id="kAud"></div></div>
+        <div class="sec hide" id="secWork"><h3>Recent work</h3><div class="works" id="kWorks"></div></div>
+        <div class="sec hide" id="secBrands"><h3>Worked with</h3><div class="brands" id="kBrands"></div></div>
+
+        <div class="sec hide" id="secRates">
+          <h3>Rate card</h3>
+          <div class="rateGrid" id="kRates"></div>
+          <div class="incl" id="kIncl"></div>
+        </div>
+
+        <div class="cta" id="kCta"></div>
+        <div class="updated"><span id="kUpdated"></span><span id="kSite"></span></div>
+      </div>
+
+      <div class="madewith">Made with <a href="#" id="mwLink">Media Kit</a> &mdash; a free tool for creators</div>
+    </div>
+  </div>
+
+  <div class="foot">Runs entirely in your browser. Nothing is uploaded, nothing is stored
+    on a server.<br>Free forever, no account, no limits.</div>
+
+  <!-- ============ EDIT YOUR DETAILS HERE ============ -->
+  <div class="credit">
+    <div class="w">Made by Mallika</div>
+    <div class="m">If this helped, please consider following.</div>
+    <div class="l">
+      <a href="https://instagram.com/mallikaux" target="_blank" rel="noopener">@mallikaux</a>
+      <a href="https://www.mallikaux.com" target="_blank" rel="noopener">Website</a>
+      <a href="mailto:YOUR-EMAIL-HERE">Say hello</a>
+    </div>
+  </div>
+  <!-- ================= END EDIT ZONE ================= -->
+</div>
+
+<div class="bar"><div class="in">
+  <div class="lab"><div class="k">Media kit</div>
+    <div class="v" id="barLab">Fill in your details</div></div>
+  <button class="btn g" type="button" onclick="doPdf()">PDF</button>
+  <button class="btn" type="button" onclick="doShare()">Get link</button>
+</div></div>
+
+<div class="sheet" id="shareSheet" onclick="if(event.target===this)close_('shareSheet')">
+  <div class="in">
+    <h3>Your media kit link</h3>
+    <p>Send this to a brand. It opens as a clean page &mdash; no editing tools, and
+      nothing identifying anyone but you.</p>
+    <div class="linkbox" id="theLink"></div>
+    <p style="font-size:12.5px;margin-bottom:0"><b style="color:var(--ink)">Updating your
+      numbers gives you a new link.</b> The whole kit lives inside the link itself, which
+      is why it needs no account and can never go offline.</p>
+    <div class="acts">
+      <button class="btn g" type="button" onclick="close_('shareSheet')">Close</button>
+      <button class="btn" type="button" onclick="copyLink()">Copy link</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var CUR=[['INR','\u20B9','en-IN',250],['USD','$','en-US',15],['EUR','\u20AC','de-DE',14],
+['GBP','\u00A3','en-GB',12],['AED','AED','en-AE',55],['SGD','S$','en-SG',20],['AUD','A$','en-AU',22]];
+
+var THEMES=[['dark','Dark','linear-gradient(180deg,#131114 60%,#fff 60%)'],
+            ['light','Light','linear-gradient(180deg,#fff 58%,#F6F4F1 58%)'],
+            ['colour','Colour','linear-gradient(180deg,var(--kit) 60%,#fff 60%)'],
+            ['editorial','Editorial','linear-gradient(180deg,#fff 54%,#131114 54%,#131114 56%,#fff 56%)']];
+
+var ACCENTS=['#3B2FD9','#131114','#0E6B5A','#B0344E','#8A4A1F','#5B2E86'];
+var PRESETS=[['1 reel',1],['1 reel + 2 stories',1.35],['Carousel post',0.7],
+             ['Story set (3 frames)',0.4],['Static post',0.55],['UGC video (no posting)',0.8]];
+
+var FIELDS=['name','handle','city','tagline','cats','followers','reach','likes','comments',
+  'engagement','storyviews','age','womenPct','cities','countries','brands','cur','perk',
+  'terms','email','phone','site'];
+var CHECKS=['optAds','optExcl','optWhite'];
+var SELS=['adsDur','exclDur'];
+var STORE='mkProfile1';
+var PHOTO='',ACC=ACCENTS[0],THEME='dark',UPDATED='',VIEWING=false;
+
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function n(v){var x=parseFloat(String(v).replace(/[^0-9.]/g,''));return isNaN(x)?0:x}
+function compact(v){var x=n(v);if(!x)return '\u2014';
+  if(x>=1e7)return (x/1e7).toFixed(x%1e7?1:0)+'Cr';
+  if(x>=1e5)return (x/1e5).toFixed(x%1e5?1:0)+'L';
+  if(x>=1000)return (x/1000).toFixed(x%1000?1:0)+'K';
+  return String(Math.round(x))}
+function curInfo(){var c=$('cur').value||'INR';
+  for(var i=0;i<CUR.length;i++)if(CUR[i][0]===c)return CUR[i];return CUR[0]}
+function money(v){var c=curInfo(),x=n(v);
+  try{return new Intl.NumberFormat(c[2],{style:'currency',currency:c[0],
+    maximumFractionDigits:0}).format(x)}catch(e){return c[1]+' '+Math.round(x)}}
+
+/* ---------- contrast ----------
+   Three derived colours, because the same accent has to work as a fill, as text
+   on white, and as text on the near-black hero. One value can't do all three. */
+function hexRgb(h){h=String(h).replace('#','');
+  if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+function rgbHex(r,g,b){return '#'+[r,g,b].map(function(v){
+  return ('0'+Math.max(0,Math.min(255,Math.round(v))).toString(16)).slice(-2)}).join('')}
+function lin(c){c/=255;return c<=0.03928?c/12.92:Math.pow((c+0.055)/1.055,2.4)}
+function lum(r){return 0.2126*lin(r[0])+0.7152*lin(r[1])+0.0722*lin(r[2])}
+function ratio(a,b){var l1=lum(a),l2=lum(b);
+  return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05)}
+function inkOn(h){var r=hexRgb(h);
+  return ratio(r,[255,255,255])>=ratio(r,[19,17,20])?'#FFFFFF':'#131114'}
+function against(hex,bgHex,target){
+  var r=hexRgb(hex),bg=hexRgb(bgHex),lighten=lum(bg)<0.5,g=0;
+  while(ratio(r,bg)<target&&g++<70){
+    r=lighten?[r[0]+(255-r[0])*0.09,r[1]+(255-r[1])*0.09,r[2]+(255-r[2])*0.09]
+             :[r[0]*0.91,r[1]*0.91,r[2]*0.91];
+  }
+  return rgbHex(r[0],r[1],r[2]);
+}
+
+/* ---------- derived numbers ---------- */
+function autoER(){
+  var f=n($('followers').value),l=n($('likes').value),c=n($('comments').value);
+  if(!f||(!l&&!c))return 0;
+  return Math.round(((l+c)/f)*1000)/10;
+}
+function effectiveER(){return n($('engagement').value)||autoER()}
+function genderSplit(){
+  var w=n($('womenPct').value);
+  if(!w||w<=0||w>100)return '';
+  var m=Math.round((100-w)*10)/10;
+  return w+'% women \u00B7 '+m+'% men';
+}
+
+function suggestRates(){
+  var f=n($('followers').value);
+  if(!f){toast('Add your follower count first');$('followers').focus();return}
+  var perk=n($('perk').value)||curInfo()[3];
+  $('perk').value=perk;
+  var er=effectiveER(),mult=1;
+  if(er>=8)mult=1.5; else if(er>=5)mult=1.3; else if(er>=3)mult=1.15;
+  else if(er>0&&er<1.5)mult=0.85;
+  var base=(f/1000)*perk*mult;
+
+  $('rates').innerHTML='';
+  PRESETS.slice(0,4).forEach(function(p){
+    addRate(p[0],Math.max(100,Math.round(base*p[1]/100)*100))});
+
+  $('sugCalc').innerHTML='<b>'+compact(f)+' followers</b> \u00D7 '+money(perk)+' per 1,000'+
+    (mult!==1?' \u00D7 '+mult+' for '+er+'% engagement':'')+' = <b>'+money(base)+
+    '</b> for one reel.<br>Everything below is editable \u2014 a starting point, not a market price.';
+  toast('Rates suggested \u2014 edit anything');
+  render();
+}
+
+/* ---------- rows ---------- */
+function addWork(t,l,v){
+  var d=document.createElement('div');d.className='work';
+  d.innerHTML='<div class="f"><input class="wt" placeholder="What was it? e.g. Reel for Nykaa" value="'+esc(t||'')+'"></div>'+
+    '<div class="r2"><div class="f" style="margin-bottom:0"><input class="wl" placeholder="Link (optional)" value="'+esc(l||'')+'"></div>'+
+    '<div class="f" style="margin-bottom:0"><input class="wv" placeholder="Views" inputmode="numeric" value="'+esc(v||'')+'"></div></div>'+
+    '<button class="btn g s" type="button" style="margin-top:9px" onclick="this.closest(\'.work\').remove();render()">Remove</button>';
+  $('works').appendChild(d);
+  d.querySelectorAll('input').forEach(function(i){i.addEventListener('input',render)});
+  render();
+}
+function addRate(label,val){
+  var d=document.createElement('div');d.className='rateRow';
+  d.innerHTML='<div><label>Deliverable</label><input class="rl" placeholder="e.g. 1 reel" value="'+esc(label||'')+'"></div>'+
+    '<div><label>Rate</label><input class="rv" inputmode="numeric" placeholder="0" value="'+esc(val==null?'':val)+'"></div>'+
+    '<button class="rm" type="button" title="Remove" onclick="this.closest(\'.rateRow\').remove();render()">&times;</button>';
+  $('rates').appendChild(d);
+  d.querySelectorAll('input').forEach(function(i){i.addEventListener('input',render)});
+  render();
+}
+function readWorks(){return [].map.call(document.querySelectorAll('#works .work'),function(e){
+  return {t:e.querySelector('.wt').value,l:e.querySelector('.wl').value,v:e.querySelector('.wv').value}})}
+function readRates(){return [].map.call(document.querySelectorAll('#rates .rateRow'),function(e){
+  return {l:e.querySelector('.rl').value,v:e.querySelector('.rv').value}})}
+
+/* ---------- render ---------- */
+function render(){
+  var root=document.documentElement.style;
+  root.setProperty('--kit',ACC);
+  root.setProperty('--kit-ink',inkOn(ACC));
+  root.setProperty('--kit-text',against(ACC,'#FFFFFF',4.5));
+  root.setProperty('--kit-dark',against(ACC,'#131114',4.5));
+  $('kit').setAttribute('data-t',THEME);
+
+  var auto=autoER(),er=effectiveER();
+  $('erCalc').innerHTML=auto
+    ? 'Engagement rate: <b>'+auto+'%</b> &nbsp;<span style="opacity:.75">('+
+      compact($('likes').value)+' likes + '+compact($('comments').value)+
+      ' comments \u00F7 '+compact($('followers').value)+' followers)</span>'
+    : 'Add followers, likes and comments and your engagement rate calculates itself.';
+
+  var gs=genderSplit();
+  $('genderCalc').innerHTML=gs?'Audience: <b>'+gs+'</b>'
+    :'Enter one number \u2014 the other works itself out.';
+
+  $('kName').textContent=$('name').value||'Your name';
+  var h=($('handle').value||'').replace(/^@/,'').trim();
+  $('kHandle').textContent=h?'@'+h:'@handle';
+  $('kHandle').setAttribute('href',h?'https://instagram.com/'+encodeURIComponent(h):'#');
+  $('kTag').textContent=$('tagline').value||'';
+  $('kCats').innerHTML=($('cats').value||'').split(',').map(function(c){return c.trim()})
+    .filter(Boolean).map(function(c){return '<i>'+esc(c)+'</i>'}).join('');
+
+  var stats=[['Followers',compact($('followers').value)],
+             ['Avg reel views',compact($('reach').value)],
+             ['Engagement',er?er+'%':'\u2014'],
+             ['Story views',compact($('storyviews').value)]];
+  $('kStats').innerHTML=stats.map(function(s){
+    return '<div><div class="v">'+s[1]+'</div><div class="k">'+s[0]+'</div></div>'}).join('');
+
+  var aud=[];
+  if($('age').value)aud.push([$('age').value,'Top age group']);
+  if(gs)aud.push([gs,'Split']);
+  if($('cities').value)aud.push([$('cities').value,'Top cities']);
+  if($('countries').value)aud.push([$('countries').value,'Top countries']);
+  if(!aud.length&&$('city').value)aud.push([$('city').value,'Based in']);
+  $('secAud').classList.toggle('hide',!aud.length);
+  $('kAud').innerHTML=aud.map(function(a){
+    return '<div><div class="v">'+esc(a[0])+'</div><div class="k">'+a[1]+'</div></div>'}).join('');
+
+  var w=readWorks().filter(function(x){return x.t.trim()});
+  $('secWork').classList.toggle('hide',!w.length);
+  $('kWorks').innerHTML=w.map(function(x){
+    var inner='<div class="t">'+esc(x.t)+'</div>'+(n(x.v)?'<div class="n">'+compact(x.v)+' views</div>':'');
+    return x.l?'<a class="wk" href="'+esc(x.l)+'" target="_blank" rel="noopener">'+inner+'</a>'
+              :'<div class="wk">'+inner+'</div>'}).join('');
+
+  var br=($('brands').value||'').split(',').map(function(b){return b.trim()}).filter(Boolean);
+  $('secBrands').classList.toggle('hide',!br.length);
+  $('kBrands').innerHTML=br.map(function(b){return '<i>'+esc(b)+'</i>'}).join('');
+
+  /* Add-ons compound, and the breakdown is printed on each card so a brand can
+     see exactly what they're paying for rather than a number that looks invented. */
+  var mult=1,adds=[],incl=[];
+  if($('optAds').checked){
+    var a=n($('adsDur').value);mult*=a;
+    var aTxt=$('adsDur').options[$('adsDur').selectedIndex].text.replace(/^For /,'').replace(/\s*\(.*\)/,'');
+    adds.push(['Paid ad usage, '+aTxt,a]);
+    incl.push('<b>Paid ad usage</b> for '+aTxt);
+  }
+  if($('optExcl').checked){
+    var x=n($('exclDur').value);mult*=x;
+    var xTxt=$('exclDur').options[$('exclDur').selectedIndex].text.replace(/^For /,'').replace(/\s*\(.*\)/,'');
+    adds.push(['No competitor work, '+xTxt,x]);
+    incl.push('<b>No competitor collaborations</b> for '+xTxt);
+  }
+  if($('optWhite').checked){mult*=1.3;adds.push(['Ads from your handle',1.3]);
+    incl.push('<b>Ads can run from my handle</b>')}
+
+  var rates=readRates().filter(function(r){return r.l.trim()&&n(r.v)});
+  $('secRates').classList.toggle('hide',!rates.length);
+  $('kRates').innerHTML=rates.map(function(r){
+    var base=n(r.v),run=base,bd='';
+    if(adds.length){
+      bd='<div class="bd"><div class="ln"><span>Base</span><span>'+money(base)+'</span></div>';
+      adds.forEach(function(a){
+        var add=run*(a[1]-1);run*=a[1];
+        bd+='<div class="ln"><span>'+esc(a[0])+'</span><span>+'+money(add)+'</span></div>';
+      });
+      bd+='<div class="ln tot"><span>Total</span><span>'+money(run)+'</span></div></div>';
+    }else{
+      bd='<div class="bd">Organic posting only</div>';
+    }
+    return '<div class="rc"><div class="d">'+esc(r.l)+'</div>'+
+      '<div class="p">'+money(base*mult)+'</div>'+bd+'</div>';
+  }).join('');
+
+  if(!incl.length)incl.push('<b>Organic posting only.</b> Paid ad usage, exclusivity and '+
+    'whitelisting are quoted separately.');
+  if($('terms').value)incl.push('<b>Payment:</b> '+esc($('terms').value));
+  $('kIncl').innerHTML=incl.join('<br>');
+
+  var cta=[['Email',$('email').value||'your@email.com']];
+  if($('phone').value)cta.push(['Phone',$('phone').value]);
+  cta.push(['Instagram',h?'@'+h:'\u2014']);
+  $('kCta').innerHTML=cta.map(function(c){
+    return '<div><div class="lbl">'+c[0]+'</div><div class="val">'+esc(c[1])+'</div></div>'}).join('');
+
+  $('kSite').textContent=$('site').value||'';
+  $('kUpdated').textContent='Updated '+(UPDATED||todayStr());
+  $('barLab').textContent=$('name').value
+    ?($('name').value+' \u00B7 '+compact($('followers').value)+' followers')
+    :'Fill in your details';
+
+  if(PHOTO){$('kAv').src=PHOTO;$('kAv').style.display='block'}
+  else{$('kAv').style.display='none'}
+
+  if(!VIEWING)saveLocal();
+}
+function todayStr(){return new Date().toLocaleDateString('en-GB',
+  {day:'numeric',month:'short',year:'numeric'})}
+
+/* ---------- local save ---------- */
+function snapshot(){
+  var o={f:{},c:{},s:{},w:readWorks(),r:readRates(),a:ACC,t:THEME};
+  FIELDS.forEach(function(k){if($(k))o.f[k]=$(k).value});
+  CHECKS.forEach(function(k){o.c[k]=$(k).checked});
+  SELS.forEach(function(k){o.s[k]=$(k).value});
+  if(PHOTO)o.p=PHOTO;
+  return o;
+}
+function restore(o){
+  if(!o)return false;
+  FIELDS.forEach(function(k){if(o.f&&o.f[k]!=null&&$(k))$(k).value=o.f[k]});
+  CHECKS.forEach(function(k){if(o.c&&o.c[k]!=null)$(k).checked=!!o.c[k]});
+  SELS.forEach(function(k){if(o.s&&o.s[k])$(k).value=o.s[k]});
+  if(o.w&&o.w.length){$('works').innerHTML='';o.w.forEach(function(x){addWork(x.t,x.l,x.v)})}
+  if(o.r&&o.r.length){$('rates').innerHTML='';o.r.forEach(function(x){addRate(x.l,x.v)})}
+  if(o.p)PHOTO=o.p;
+  if(o.a)ACC=o.a;
+  if(o.t)THEME=o.t;
+  return true;
+}
+var saveT;
+function saveLocal(){
+  clearTimeout(saveT);
+  saveT=setTimeout(function(){
+    try{localStorage.setItem(STORE,JSON.stringify(snapshot()));
+      $('savedTag').textContent='\u00B7 saved on this device'}catch(e){}
+  },400);
+}
+function loadLocal(){
+  try{var raw=localStorage.getItem(STORE);
+    if(raw&&restore(JSON.parse(raw))){$('savedTag').textContent='\u00B7 saved on this device';return true}
+  }catch(e){}
+  return false;
+}
+function clearSaved(){
+  if(!confirm('Remove everything saved on this device?'))return;
+  try{localStorage.removeItem(STORE)}catch(e){}
+  location.hash='';location.reload();
+}
+
+/* ---------- share ---------- */
+function pack(){var o=snapshot();o.u=todayStr();
+  return btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
+function unpack(str){
+  var o=JSON.parse(decodeURIComponent(escape(atob(str))));
+  restore(o);UPDATED=o.u||'';return true;
+}
+function openSharedKit(){
+  var m=location.hash.match(/[#&]k=(.+)$/);
+  if(!m)return false;
+  VIEWING=true;
+  if(!unpack(m[1])){VIEWING=false;return false}
+  document.body.classList.add('viewing');
+  document.title=($('name').value||'Media kit')+' \u2014 Media Kit';
+  $('mwLink').setAttribute('href',location.origin+location.pathname);
+  render();window.scrollTo(0,0);
+  return true;
+}
+function doShare(){
+  if(!$('name').value.trim()||!$('handle').value.trim()){
+    toast('Add your name and handle first');$('s1').open=true;return}
+  try{
+    var url=location.origin+location.pathname+'#k='+pack();
+    $('theLink').textContent=url;
+    $('shareSheet').classList.add('on');
+    if(url.length>7000)toast('Tip: a smaller profile photo keeps the link short');
+  }catch(e){toast('Could not build the link')}
+}
+function copyLink(){
+  var t=$('theLink').textContent;
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t);
+  toast('Link copied');
+}
+function doPdf(){
+  if(!$('name').value.trim()){toast('Add your name first');$('s1').open=true;return}
+  window.print();
+}
+function close_(id){$(id).classList.remove('on')}
+var tt;function toast(m){var e=$('toast');e.textContent=m;e.classList.add('on');
+  clearTimeout(tt);tt=setTimeout(function(){e.classList.remove('on')},2400)}
+
+/* ---------- boot ---------- */
+function step(nm,fn){try{fn()}catch(e){
+  if(window.console)console.error('['+nm+']',e);
+  var b=$('bootErr');
+  if(b){b.classList.add('on');b.textContent='Something failed loading "'+nm+'". The rest still works.'}
+}}
+
+step('currency',function(){
+  $('cur').innerHTML=CUR.map(function(c){
+    return '<option value="'+c[0]+'">'+c[0]+' \u2014 '+c[1]+'</option>'}).join('');
+  $('cur').addEventListener('change',function(){$('perk').placeholder=String(curInfo()[3])});
+});
+step('themes',function(){
+  $('themes').innerHTML=THEMES.map(function(t){
+    return '<button class="th" type="button" data-t="'+t[0]+'" onclick="THEME=\''+t[0]+
+      '\';markTh();render()"><span class="sw" style="background:'+t[2]+'"></span>'+
+      '<span class="nm">'+t[1]+'</span></button>'}).join('');
+});
+step('swatches',function(){
+  $('swatches').innerHTML=ACCENTS.map(function(c){
+    return '<button class="sw2" type="button" data-c="'+c+'" style="background:'+c+
+      '" onclick="ACC=\''+c+'\';markSw();render()" aria-label="Kit accent"></button>'}).join('');
+});
+step('shared or saved',function(){
+  if(openSharedKit())return;
+  loadLocal();
+});
+window.addEventListener('hashchange',function(){try{openSharedKit()}catch(e){}});
+
+step('defaults',function(){
+  if(VIEWING)return;
+  if(!document.querySelector('#works .work'))addWork();
+  if(!document.querySelector('#rates .rateRow'))PRESETS.slice(0,4).forEach(function(p){addRate(p[0],'')});
+});
+step('inputs',function(){
+  document.querySelectorAll('input,textarea,select').forEach(function(el){
+    if(el.type==='file'||el.type==='checkbox')return;
+    el.addEventListener('input',render);
+    el.addEventListener('change',render);
+  });
+  $('photo').addEventListener('change',function(e){
+    var f=e.target.files&&e.target.files[0];if(!f)return;
+    if(f.size>400000){toast('Use a photo under 400 KB \u2014 it keeps the link short');return}
+    var fr=new FileReader();
+    fr.onload=function(){PHOTO=fr.result;$('photoState').textContent='Photo added.';render()};
+    fr.readAsDataURL(f);
+  });
+});
+function markSw(){[].forEach.call(document.querySelectorAll('#swatches .sw2'),function(b){
+  b.setAttribute('aria-pressed',b.getAttribute('data-c')===ACC)})}
+function markTh(){[].forEach.call(document.querySelectorAll('#themes .th'),function(b){
+  b.setAttribute('aria-pressed',b.getAttribute('data-t')===THEME)})}
+step('marks',function(){markSw();markTh();$('perk').placeholder=String(curInfo()[3])});
+step('first render',render);
+</script>
+</body>
+</html>
