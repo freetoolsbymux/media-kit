@@ -124,6 +124,11 @@
   .hero .who{display:flex;align-items:center;gap:16px;margin-bottom:18px}
   .hero .av{width:64px;height:64px;border-radius:50%;object-fit:cover;flex:0 0 auto;
             background:#2A272C;border:2px solid rgba(255,255,255,.16)}
+  .hero .av.init{display:flex;align-items:center;justify-content:center;
+            font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:700;
+            color:#F7F6F8;letter-spacing:-.02em}
+  .kit[data-t="light"] .hero .av.init,.kit[data-t="editorial"] .hero .av.init{color:var(--ink)}
+  .kit[data-t="colour"] .hero .av.init{color:var(--kit-ink);background:rgba(255,255,255,.16)}
   .hero h2{margin:0;font-size:29px;font-weight:800;letter-spacing:-.035em;line-height:1.05}
   .hero .handle{font-size:14px;font-weight:600;margin-top:5px;display:inline-block;
                 text-decoration:none;color:var(--kit-dark);border-bottom:1px solid transparent}
@@ -304,6 +309,19 @@
 </head>
 <body>
 
+<div class="sheet" id="gate">
+  <div class="in">
+    <h3>Before you start</h3>
+    <p id="gateCopy">This tool is free and always will be. If it's useful, leaving your
+      email is the only thing I ask in return &mdash; I'll send you the build guide and
+      let you know when the next tool drops.</p>
+    <div class="f"><input id="gateEmail" type="email" placeholder="you@example.com"></div>
+    <button class="btn w" type="button" onclick="submitGate()" id="gateBtn">Send me the guide</button>
+    <div style="text-align:center"><button class="skip" id="gateSkip" type="button"
+      onclick="closeGate(true)">No thanks, just let me in</button></div>
+  </div>
+</div>
+
 <div class="wrap">
   <div class="boot" id="bootErr"></div>
 
@@ -336,7 +354,12 @@
             <div class="hint">Comma separated.</div></div>
           <div class="f" style="margin-bottom:0"><label for="photo">Profile photo</label>
             <input id="photo" type="file" accept="image/*" style="padding:8px">
-            <div class="hint" id="photoState"></div></div>
+            <div class="hint" id="photoState"></div>
+            <div class="opt" style="margin-top:9px">
+              <input type="checkbox" id="inclPhoto" onchange="render()">
+              <div class="txt"><b>Include the photo in the shared link</b>
+                <span>Off by default \u2014 a photo makes the link many times longer. Your initials show instead.</span></div>
+            </div></div>
         </div>
       </details>
 
@@ -474,6 +497,7 @@
         <div class="hero">
           <div class="who">
             <img class="av" id="kAv" alt="" style="display:none">
+            <div class="av init" id="kInit" style="display:none"></div>
             <div><h2 class="disp" id="kName">Your name</h2>
               <a class="handle" id="kHandle" target="_blank" rel="noopener">@handle</a></div>
           </div>
@@ -510,7 +534,16 @@
     <div class="l">
       <a href="https://instagram.com/mallikaux" target="_blank" rel="noopener">@mallikaux</a>
       <a href="https://www.mallikaux.com" target="_blank" rel="noopener">Website</a>
-      <a href="mailto:YOUR-EMAIL-HERE">Say hello</a>
+      <a href="mailto:work@mallikaux.com">Say hello</a>
+    </div>
+    <div class="news">
+      <b>Be the first to know when new tools drop</b>
+      <p>I build small free tools for creators and write up how each one was made.</p>
+      <div class="f" style="margin-bottom:8px">
+        <input id="newsEmail" type="email" placeholder="you@example.com"></div>
+      <button class="btn w" type="button" onclick="subscribe()" id="newsBtn">Send me the guide</button>
+      <p class="hint" style="text-align:center;margin-top:8px">We respect your privacy.
+        Unsubscribe at any time.</p>
     </div>
   </div>
   <!-- ================= END EDIT ZONE ================= -->
@@ -529,6 +562,7 @@
     <p>Send this to a brand. It opens as a clean page &mdash; no editing tools, and
       nothing identifying anyone but you.</p>
     <div class="linkbox" id="theLink"></div>
+    <div style="font-size:11.5px;color:var(--mut);margin:-6px 0 12px" id="linkLen"></div>
     <p style="font-size:12.5px;margin-bottom:0"><b style="color:var(--ink)">Updating your
       numbers gives you a new link.</b> The whole kit lives inside the link itself, which
       is why it needs no account and can never go offline.</p>
@@ -542,6 +576,15 @@
 <div class="toast" id="toast"></div>
 
 <script>
+/* ============================================================
+   GATE: 'soft' asks but lets people skip (recommended)
+         'hard' requires an email first
+         'off'  never asks
+   KIT_FORM_ID from your form's embed action URL.
+   ============================================================ */
+var GATE='soft';
+var KIT_FORM_ID='9798685';
+
 var CUR=[['INR','\u20B9','en-IN',250],['USD','$','en-US',15],['EUR','\u20AC','de-DE',14],
 ['GBP','\u00A3','en-GB',12],['AED','AED','en-AE',55],['SGD','S$','en-SG',20],['AUD','A$','en-AU',22]];
 
@@ -561,6 +604,8 @@ var CHECKS=['optAds','optExcl','optWhite'];
 var SELS=['adsDur','exclDur'];
 var STORE='mkProfile1';
 var PHOTO='',ACC=ACCENTS[0],THEME='dark',UPDATED='',VIEWING=false;
+
+
 
 function $(i){return document.getElementById(i)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){
@@ -769,8 +814,15 @@ function render(){
     ?($('name').value+' \u00B7 '+compact($('followers').value)+' followers')
     :'Fill in your details';
 
-  if(PHOTO){$('kAv').src=PHOTO;$('kAv').style.display='block'}
-  else{$('kAv').style.display='none'}
+  var showPhoto=PHOTO&&(VIEWING||$('inclPhoto').checked);
+  if(showPhoto){$('kAv').src=PHOTO;$('kAv').style.display='block';
+    $('kInit').style.display='none'}
+  else{$('kAv').style.display='none';
+    var nm=($('name').value||'').trim();
+    if(nm){var parts=nm.split(/\s+/);
+      $('kInit').textContent=(parts[0][0]+(parts[1]?parts[1][0]:'')).toUpperCase();
+      $('kInit').style.display='flex'}
+    else{$('kInit').style.display='none'}}
 
   if(!VIEWING)saveLocal();
 }
@@ -819,32 +871,119 @@ function clearSaved(){
 }
 
 /* ---------- share ---------- */
-function pack(){var o=snapshot();o.u=todayStr();
-  return btoa(unescape(encodeURIComponent(JSON.stringify(o))))}
-function unpack(str){
-  var o=JSON.parse(decodeURIComponent(escape(atob(str))));
-  restore(o);UPDATED=o.u||'';return true;
+/* ---------- link encoding ----------
+   Three things keep this short: the payload is a positional array so no key
+   names travel, it's deflated with the browser's built-in CompressionStream so
+   there's no library to break, and the photo is left out unless you ask for it.
+   Base64url, so no percent-escaping bloats it further. */
+function b64url(bytes){
+  var s='';for(var i=0;i<bytes.length;i++)s+=String.fromCharCode(bytes[i]);
+  return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 }
+function unb64url(str){
+  var t=String(str).replace(/-/g,'+').replace(/_/g,'/');
+  while(t.length%4)t+='=';
+  var bin=atob(t),out=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);
+  return out;
+}
+function trimTail(a){var b=a.slice();
+  while(b.length&&(b[b.length-1]===''||b[b.length-1]==null))b.pop();return b}
+
+function packArray(){
+  var f=trimTail(FIELDS.map(function(k){return $(k)?String($(k).value||'').trim():''}));
+  var w=readWorks().filter(function(x){return String(x.t).trim()})
+        .map(function(x){return trimTail([x.t,x.l,x.v])});
+  var r=readRates().filter(function(x){return String(x.l).trim()})
+        .map(function(x){return trimTail([x.l,x.v])});
+  var opt=[$('optAds').checked?$('adsDur').value:'',
+           $('optExcl').checked?$('exclDur').value:'',
+           $('optWhite').checked?1:''];
+  var out=[f,w,r,trimTail(opt),
+           ACC===ACCENTS[0]?'':ACC,
+           THEME==='dark'?'':THEME,
+           todayStr(),
+           (PHOTO&&$('inclPhoto').checked)?PHOTO:''];
+  return trimTail(out);
+}
+function applyArray(a){
+  var f=a[0]||[];
+  FIELDS.forEach(function(k,i){if($(k))$(k).value=f[i]||''});
+  var w=a[1]||[];
+  if(w.length){$('works').innerHTML='';
+    w.forEach(function(x){addWork(x[0]||'',x[1]||'',x[2]||'')})}
+  var r=a[2]||[];
+  if(r.length){$('rates').innerHTML='';
+    r.forEach(function(x){addRate(x[0]||'',x[1]||'')})}
+  var o=a[3]||[];
+  $('optAds').checked=!!o[0];if(o[0])$('adsDur').value=o[0];
+  $('optExcl').checked=!!o[1];if(o[1])$('exclDur').value=o[1];
+  $('optWhite').checked=!!o[2];
+  ACC=a[4]||ACCENTS[0];
+  THEME=a[5]||'dark';
+  UPDATED=a[6]||'';
+  PHOTO=a[7]||'';
+  return true;
+}
+
+function encodeKit(){
+  var json=JSON.stringify(packArray());
+  var raw=new TextEncoder().encode(json);
+  if(!window.CompressionStream)return Promise.resolve('r'+b64url(raw));
+  return new Response(new Blob([raw]).stream()
+      .pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer()
+    .then(function(buf){
+      var z='z'+b64url(new Uint8Array(buf));
+      var r='r'+b64url(raw);
+      return z.length<r.length?z:r;      /* tiny payloads can deflate larger */
+    })['catch'](function(){return 'r'+b64url(raw)});
+}
+function decodeKit(str){
+  var flag=str.charAt(0),body=str.slice(1);
+  if(flag==='z'&&window.DecompressionStream){
+    return new Response(new Blob([unb64url(body)]).stream()
+        .pipeThrough(new DecompressionStream('deflate-raw'))).text()
+      .then(function(t){return JSON.parse(t)});
+  }
+  if(flag==='r')return Promise.resolve(JSON.parse(new TextDecoder().decode(unb64url(body))));
+  /* pre-compression links used plain base64 JSON with named keys */
+  return Promise.resolve(JSON.parse(decodeURIComponent(escape(atob(str)))));
+}
+
 function openSharedKit(){
   var m=location.hash.match(/[#&]k=(.+)$/);
   if(!m)return false;
   VIEWING=true;
-  if(!unpack(m[1])){VIEWING=false;return false}
   document.body.classList.add('viewing');
-  document.title=($('name').value||'Media kit')+' \u2014 Media Kit';
-  $('mwLink').setAttribute('href',location.origin+location.pathname);
-  render();window.scrollTo(0,0);
+  decodeKit(m[1]).then(function(arr){
+    if(arr&&arr.f){                       /* old named-key format */
+      restore(arr);UPDATED=arr.u||'';
+    }else{applyArray(arr)}
+    document.title=($('name').value||'Media kit')+' \u2014 Media Kit';
+    $('mwLink').setAttribute('href',location.origin+location.pathname);
+    render();window.scrollTo(0,0);
+  })['catch'](function(){
+    VIEWING=false;document.body.classList.remove('viewing');
+    toast('That link looks damaged');
+  });
   return true;
 }
 function doShare(){
   if(!$('name').value.trim()||!$('handle').value.trim()){
     toast('Add your name and handle first');$('s1').open=true;return}
-  try{
-    var url=location.origin+location.pathname+'#k='+pack();
+  $('theLink').textContent='Building\u2026';
+  $('linkLen').textContent='';
+  $('shareSheet').classList.add('on');
+  encodeKit().then(function(code){
+    var url=location.origin+location.pathname+'#k='+code;
     $('theLink').textContent=url;
-    $('shareSheet').classList.add('on');
-    if(url.length>7000)toast('Tip: a smaller profile photo keeps the link short');
-  }catch(e){toast('Could not build the link')}
+    var len=url.length;
+    $('linkLen').textContent=len+' characters'+
+      (len>1500?' \u2014 untick \u201Cinclude the photo\u201D above to shorten it a lot':'');
+    $('linkLen').style.color=len>1500?'#8A5A24':'var(--mut)';
+  })['catch'](function(){
+    $('theLink').textContent='';toast('Could not build the link');
+  });
 }
 function copyLink(){
   var t=$('theLink').textContent;
@@ -855,6 +994,42 @@ function doPdf(){
   if(!$('name').value.trim()){toast('Add your name first');$('s1').open=true;return}
   window.print();
 }
+/* Posts to the same endpoint Kit's own embed uses — no API key, and
+   confirmation emails and unsubscribes behave exactly as on their forms. */
+function postEmail(email,done){
+  if(!KIT_FORM_ID){done(false,'Signup isn\u2019t set up yet');return}
+  var body=new URLSearchParams();
+  body.append('email_address',email);
+  fetch('https://app.kit.com/forms/'+encodeURIComponent(KIT_FORM_ID)+'/subscriptions',{
+    method:'POST',headers:{'Accept':'application/json'},body:body})
+  .then(function(r){r.ok?done(true):done(false,'Kit returned '+r.status)})
+  ['catch'](function(){done(true)});   /* request was sent; only the reply was blocked */
+}
+function submitGate(){
+  var e=$('gateEmail').value.trim();
+  if(!/^\S+@\S+\.\S+$/.test(e)){toast('That email doesn\u2019t look right');return}
+  var b=$('gateBtn');b.disabled=true;b.textContent='One moment\u2026';
+  postEmail(e,function(ok,msg){
+    if(ok){closeGate(false);toast('Thank you \u2014 check your inbox to confirm')}
+    else{b.disabled=false;b.textContent='Send me the guide';toast(msg||'That didn\u2019t go through')}
+  });
+}
+function closeGate(skipped){
+  $('gate').classList.remove('on');
+  try{localStorage.setItem('mkGate',skipped?'skipped':'done')}catch(e){}
+}
+function subscribe(){
+  var e=$('newsEmail').value.trim();
+  if(!/^\S+@\S+\.\S+$/.test(e)){toast('That email doesn\u2019t look right');return}
+  var b=$('newsBtn');b.disabled=true;b.textContent='Subscribing\u2026';
+  postEmail(e,function(ok,msg){
+    b.textContent=ok?'Check your inbox':'Send me the guide';
+    if(!ok)b.disabled=false;
+    toast(ok?'Almost there \u2014 confirm from the email Kit just sent'
+            :(msg||'Couldn\u2019t send \u2014 try again later'));
+  });
+}
+
 function close_(id){$(id).classList.remove('on')}
 var tt;function toast(m){var e=$('toast');e.textContent=m;e.classList.add('on');
   clearTimeout(tt);tt=setTimeout(function(){e.classList.remove('on')},2400)}
@@ -888,6 +1063,17 @@ step('shared or saved',function(){
 });
 window.addEventListener('hashchange',function(){try{openSharedKit()}catch(e){}});
 
+step('gate',function(){
+  if(VIEWING||GATE==='off')return;          /* brands opening a kit never see this */
+  var seen='';try{seen=localStorage.getItem('mkGate')||''}catch(e){}
+  if(seen)return;
+  if(GATE==='hard'){
+    $('gateSkip').classList.add('hide');
+    $('gateCopy').textContent='This tool is completely free. Leave your email and it\u2019s '+
+      'yours \u2014 I\u2019ll only write when I build something new.';
+  }
+  $('gate').classList.add('on');
+});
 step('defaults',function(){
   if(VIEWING)return;
   if(!document.querySelector('#works .work'))addWork();
@@ -901,9 +1087,26 @@ step('inputs',function(){
   });
   $('photo').addEventListener('change',function(e){
     var f=e.target.files&&e.target.files[0];if(!f)return;
-    if(f.size>400000){toast('Use a photo under 400 KB \u2014 it keeps the link short');return}
     var fr=new FileReader();
-    fr.onload=function(){PHOTO=fr.result;$('photoState').textContent='Photo added.';render()};
+    fr.onload=function(){
+      /* Squared off and shrunk to 128px before anything else touches it. A
+         full-size photo is worth hundreds of thousands of characters in a URL. */
+      var img=new Image();
+      img.onload=function(){
+        try{
+          var side=Math.min(img.width,img.height),S=128;
+          var cv=document.createElement('canvas');cv.width=S;cv.height=S;
+          var cx=cv.getContext('2d');
+          cx.drawImage(img,(img.width-side)/2,(img.height-side)/2,side,side,0,0,S,S);
+          PHOTO=cv.toDataURL('image/jpeg',0.72);
+        }catch(err){PHOTO=fr.result}
+        $('photoState').textContent='Photo added \u00B7 '+
+          Math.round(PHOTO.length/1024)+' KB in the link';
+        render();
+      };
+      img.onerror=function(){PHOTO=fr.result;render()};
+      img.src=fr.result;
+    };
     fr.readAsDataURL(f);
   });
 });
