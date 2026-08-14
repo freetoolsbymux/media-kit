@@ -279,9 +279,17 @@
   .foot{text-align:center;font-size:12px;color:var(--mut);line-height:1.75;padding:30px 0 12px}
   .credit{max-width:460px;margin:0 auto;background:#fff;border:1px solid var(--line);
           border-radius:12px;padding:17px 18px;text-align:center}
-  .credit .w{font-size:14.5px;font-weight:600}
+  .credit .w{font-size:16px;font-weight:700;letter-spacing:-.02em}
   .credit .m{font-size:12.5px;color:var(--mut);line-height:1.6;margin:6px 0 13px}
   .credit .l{display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+  .skip{font-family:inherit;background:none;border:0;color:var(--mut);font-size:13px;
+        cursor:pointer;padding:12px 4px 0;text-decoration:underline;text-underline-offset:2px}
+  .credit .news{margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+  .credit .news b{font-size:12.5px;font-weight:700;display:block;letter-spacing:-.005em}
+  .credit .news p{font-size:12px;color:var(--mut);margin:4px 0 11px;line-height:1.5}
+  .credit .news input{font-size:14px;padding:9px 11px}
+  .credit .news .btn{font-size:13px;padding:9px 14px}
+  .credit .news .fine{font-size:11px;color:var(--mut);margin-top:7px}
   .credit a{font-size:12.5px;font-weight:600;text-decoration:none;color:var(--ui);
             background:var(--ui-soft);border:1px solid #DAD6FB;border-radius:999px;padding:7px 14px}
 
@@ -296,7 +304,49 @@
   body.viewing .kitPane{position:static}
 
   @media print{
-    @page{size:A4;margin:10mm}
+    @page{size:A4;margin:9mm}
+    /* Everything shrinks on paper so a full kit lands on two pages rather than
+       spilling a few orphan lines onto a third. */
+    .kit{font-size:13px}
+    .hero{padding:20px 22px 18px!important}
+    .hero .who{margin-bottom:12px;gap:11px}
+    .hero .av{width:46px;height:46px}
+    .hero h2{font-size:21px}
+    .hero .tag{font-size:11px;line-height:1.42;max-width:60ch}
+    .hero .cats{margin-top:8px}
+    .hero .cats i{font-size:9px;padding:3px 8px}
+    .stats{margin-top:13px}
+    .stats div{padding:9px 10px}
+    .stats .v{font-size:18px}
+    .stats .k{font-size:8px;margin-top:2px}
+    .sec{padding:15px 22px}
+    .sec h3{font-size:8.5px;margin-bottom:9px}
+    .aud{gap:12px}
+    .aud .v{font-size:14px}
+    .aud .k{font-size:9px}
+    .works{gap:8px}
+    .wk{padding:9px}
+    .wk .t{font-size:11px}
+    .wk .n{font-size:9.5px;margin-top:4px}
+    .brands i{font-size:10px;padding:4px 9px}
+    .rateGrid{gap:8px}
+    .rc{padding:11px 11px}
+    .rc .d{font-size:11px}
+    .rc .p{font-size:18px;margin-top:5px}
+    .rc .bd{font-size:8.5px;margin-top:5px;line-height:1.5}
+    .incl{font-size:10px;margin-top:10px;padding-top:9px;line-height:1.55}
+    .cta{padding:14px 22px}
+    .cta .lbl{font-size:8px}
+    .cta .val{font-size:11.5px;margin-top:2px}
+    .updated{font-size:9px;padding:8px 22px}
+    .kit[data-t="editorial"] .hero{padding:24px 24px 0!important}
+    .kit[data-t="editorial"] h2{font-size:26px}
+    .kit[data-t="editorial"] .sec,
+    .kit[data-t="editorial"] .cta,
+    .kit[data-t="editorial"] .updated{padding-left:24px;padding-right:24px}
+    .kit[data-t="editorial"] .stats{margin:16px -24px 0;padding:0 24px}
+    .kit[data-t="editorial"] .stats div{padding:11px 12px 13px 0}
+    .kit[data-t="editorial"] .stats .v{font-size:20px}
     .top,.editPane,.bar,.sheet,.toast,.foot,.credit,.kitHead,.boot,.madewith{display:none!important}
     .wrap{padding:0;max-width:none}
     .cols{display:block}
@@ -543,8 +593,7 @@
       <div class="f" style="margin-bottom:8px">
         <input id="newsEmail" type="email" placeholder="you@example.com"></div>
       <button class="btn w" type="button" onclick="subscribe()" id="newsBtn">Send me the guide</button>
-      <p class="hint" style="text-align:center;margin-top:8px">We respect your privacy.
-        Unsubscribe at any time.</p>
+      <p class="fine">We respect your privacy. Unsubscribe at any time.</p>
     </div>
   </div>
   <!-- ================= END EDIT ZONE ================= -->
@@ -587,7 +636,17 @@ var GATE='soft';
 var KIT_FORM_ID='9798685';
 
 var CUR=[['INR','\u20B9','en-IN',250],['USD','$','en-US',15],['EUR','\u20AC','de-DE',14],
-['GBP','\u00A3','en-GB',12],['AED','AED','en-AE',55],['SGD','S$','en-SG',20],['AUD','A$','en-AU',22]];
+['GBP','\u00A3','en-GB',12],['AED','AED','en-AE',55],['SAR','SAR','ar-SA',56],
+['QAR','QAR','ar-QA',55],['KWD','KWD','ar-KW',5],['SGD','S$','en-SG',20],
+['AUD','A$','en-AU',22],['CAD','C$','en-CA',20],['NZD','NZ$','en-NZ',24],
+['JPY','\u00A5','ja-JP',2200],['CHF','CHF','de-CH',13],['SEK','kr','sv-SE',160],
+['NOK','kr','nb-NO',165],['DKK','kr','da-DK',105],['ZAR','R','en-ZA',280],
+['MYR','RM','ms-MY',70],['IDR','Rp','id-ID',240000],['PHP','\u20B1','en-PH',850],
+['THB','\u0E3F','th-TH',540],['VND','\u20AB','vi-VN',380000],['HKD','HK$','en-HK',115],
+['KRW','\u20A9','ko-KR',20000],['CNY','\u00A5','zh-CN',105],['TRY','\u20BA','tr-TR',510],
+['BRL','R$','pt-BR',80],['MXN','MX$','es-MX',260],['NGN','\u20A6','en-NG',23000],
+['KES','KSh','en-KE',1900],['EGP','E\u00A3','ar-EG',730],['PKR','Rs','en-PK',4200],
+['BDT','\u09F3','bn-BD',1800],['LKR','Rs','si-LK',4400],['NPR','Rs','ne-NP',2000]];
 
 var THEMES=[['dark','Dark','linear-gradient(180deg,#131114 60%,#fff 60%)'],
             ['light','Light','linear-gradient(180deg,#fff 58%,#F6F4F1 58%)'],
