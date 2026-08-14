@@ -443,6 +443,7 @@
             <div class="txt"><b>They want to run it as a paid ad</b>
               <span>Your content used in their advertising, not just posted on your page.</span>
               <select id="adsDur" onchange="render()">
+                <option value="1.25">For 1 month (+25%)</option>
                 <option value="1.5">For 3 months (+50%)</option>
                 <option value="1.8">For 6 months (+80%)</option>
                 <option value="2.2">For 1 year (+120%)</option>
@@ -594,8 +595,12 @@ var THEMES=[['dark','Dark','linear-gradient(180deg,#131114 60%,#fff 60%)'],
             ['editorial','Editorial','linear-gradient(180deg,#fff 54%,#131114 54%,#131114 56%,#fff 56%)']];
 
 var ACCENTS=['#3B2FD9','#131114','#0E6B5A','#B0344E','#8A4A1F','#5B2E86'];
-var PRESETS=[['1 reel',1],['1 reel + 2 stories',1.35],['Carousel post',0.7],
-             ['Story set (3 frames)',0.4],['Static post',0.55],['UGC video (no posting)',0.8]];
+/* UGC sits apart from the rest: the brand posts it, so you're selling
+   production rather than access to your audience. Priced close to a reel
+   because the shooting and editing effort is the same. */
+var PRESETS=[['1 reel',1],['1 reel + 2 stories',1.35],['Story set (3 frames)',0.4],
+             ['UGC video \u2014 brand posts it',0.9],['Carousel post',0.7],
+             ['Static post',0.55],['UGC photo set \u2014 brand posts it',0.5]];
 
 var FIELDS=['name','handle','city','tagline','cats','followers','reach','likes','comments',
   'engagement','storyviews','age','womenPct','cities','countries','brands','cur','perk',
@@ -797,6 +802,10 @@ function render(){
       '<div class="p">'+money(base*mult)+'</div>'+bd+'</div>';
   }).join('');
 
+  if(rates.some(function(r){return /ugc/i.test(r.l)})){
+    incl.push('<b>UGC</b> is shot and edited for you to post on your own channels. '+
+      'It is not published on my page, so it does not include access to my audience.');
+  }
   if(!incl.length)incl.push('<b>Organic posting only.</b> Paid ad usage, exclusivity and '+
     'whitelisting are quoted separately.');
   if($('terms').value)incl.push('<b>Payment:</b> '+esc($('terms').value));
