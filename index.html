@@ -303,6 +303,34 @@
   body.viewing .wrap{max-width:880px;padding:26px 18px 40px}
   body.viewing .kitPane{position:static}
 
+  /* ---------- brand brief → quote ---------- */
+  .briefCard{border-color:#DAD6FB;box-shadow:0 0 0 3px var(--ui-soft)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 4px}
+  .chip{font-size:12px;font-weight:500;background:var(--ui-soft);color:#2A2196;border-radius:999px;padding:5px 11px;line-height:1.35}
+  .chip.warn{background:#FBEFEC;color:#8A3324}
+  .chip.mute{background:var(--soft);color:var(--mut)}
+  .itemRow{border:1px solid var(--line);border-radius:9px;padding:10px;margin-bottom:8px;background:var(--soft);
+           display:grid;grid-template-columns:58px 1fr 104px 34px;gap:8px;align-items:end}
+  @media(max-width:430px){.itemRow{grid-template-columns:52px 1fr 92px 34px}}
+  .itemRow .rm{width:34px;height:38px;border:1px solid var(--line);background:#fff;border-radius:7px;color:var(--mut);cursor:pointer;font-size:15px}
+  .itemRow input{padding:9px 9px}
+  .reply{min-height:220px;font-size:14px}
+  .dealDiv{border-top:1px dashed var(--line);margin:16px 0 14px}
+
+  .deal .for{font-size:13.5px;color:var(--mut);margin:-6px 0 12px;line-height:1.5}
+  .deal .for b{color:var(--ink);font-weight:600}
+  .dl{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+  .dl .q{color:var(--mut);margin-right:7px;font-variant-numeric:tabular-nums}
+  .dl .amt{font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+  .dl.sub{font-size:13px;color:var(--mut)}
+  .dl.sub .amt{font-weight:500}
+  .dl.tot{border-bottom:0;border-top:2px solid var(--ink);margin-top:2px;padding-top:14px}
+  .dl.tot span:first-child{font-weight:700}
+  .dl.tot .amt{font-family:'Bricolage Grotesque',sans-serif;font-size:27px;font-weight:800;letter-spacing:-.035em;color:var(--kit-text)}
+  .deal .meta{font-size:12.5px;color:var(--mut);line-height:1.75;margin-top:12px}
+  .deal .meta b{color:var(--ink);font-weight:600}
+  .kit[data-t="editorial"] .dl.tot .amt{font-family:'Newsreader',Georgia,serif;font-weight:400;font-size:30px}
+
   @media print{
     @page{size:A4;margin:9mm}
     /* Everything shrinks on paper so a full kit lands on two pages rather than
@@ -354,6 +382,9 @@
     .kit{border:0;border-radius:0}
     .hero,.stats div,.rc .p{-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .sec,.cta,.rc{page-break-inside:avoid}
+    .dl{font-size:11px;padding:6px 0}
+    .dl.tot .amt{font-size:19px}
+    .deal .meta{font-size:9.5px;margin-top:8px}
   }
 </style>
 </head>
@@ -385,6 +416,52 @@
 
   <div class="cols">
     <div class="editPane">
+
+      <details class="card briefCard" open id="s0">
+        <summary><span><span class="num">&#10022;</span>Quote from a brand message</span><span class="chev">&#9656;</span></summary>
+        <div class="body">
+          <p class="hint" style="margin:0 0 11px">Paste the brand&rsquo;s DM or email. It reads what they&rsquo;re asking for &mdash;
+            deliverables, usage, exclusivity, budget &mdash; and builds a quote from your rate card that you can edit.</p>
+          <textarea id="brief" style="min-height:120px" placeholder="Hi Mallika! I'm Riya from Acme. We'd love 2 reels and 3 stories for our new launch, with usage rights for 3 months. Our budget is around 40k…"></textarea>
+          <div class="r2" style="margin-top:10px">
+            <button class="btn s" type="button" onclick="readBrief()">Build the quote</button>
+            <button class="btn g s" type="button" onclick="clearDeal()">Clear quote</button>
+          </div>
+          <div id="dealBox" class="hide">
+            <div class="chips" id="found"></div>
+            <div class="dealDiv"></div>
+            <div class="r2">
+              <div class="f"><label for="dBrand">Brand</label><input id="dBrand" placeholder="Brand name"></div>
+              <div class="f"><label for="dContact">Their name</label><input id="dContact" placeholder="Who wrote to you"></div>
+            </div>
+            <div class="f"><label for="dCampaign">Campaign or product <span class="norm">optional</span></label>
+              <input id="dCampaign" placeholder="e.g. their new serum launch"></div>
+            <label>Deliverables</label>
+            <div id="dItems"></div>
+            <button class="btn g w s" type="button" onclick="addItem(1,'','')">+ Add a line</button>
+            <div class="hint">Prices come from your rate card below. Paid usage, exclusivity and whitelisting are ticked
+              in <b>5 · Rates</b> and added on top.</div>
+            <div class="r3" style="margin-top:12px">
+              <div class="f"><label for="dDisc">Discount %</label><input id="dDisc" inputmode="decimal" placeholder="0"></div>
+              <div class="f"><label for="dValid">Valid for</label><input id="dValid" placeholder="14 days"></div>
+              <div class="f"><label for="dTime">Timeline</label><input id="dTime" placeholder="Live by…"></div>
+            </div>
+            <div class="calc" id="dCalc"></div>
+            <div class="opt">
+              <input type="checkbox" id="dShowCard" onchange="render()">
+              <div class="txt"><b>Also show my full rate card</b>
+                <span>Off: the brand sees only this quote. On: the quote, then your full rate card.</span></div>
+            </div>
+            <label style="margin-top:14px" for="dReply">Reply to send <span class="norm">edit freely</span></label>
+            <textarea id="dReply" class="reply"></textarea>
+            <div class="r2" style="margin-top:9px">
+              <button class="btn s" type="button" onclick="copyReply()">Copy reply + kit link</button>
+              <button class="btn g s" type="button" onclick="writeReply(true)">Rewrite from quote</button>
+            </div>
+            <div class="hint">The kit link is added where the reply says <b>[media kit link]</b>.</div>
+          </div>
+        </div>
+      </details>
 
       <details class="card" open id="s1">
         <summary><span><span class="num">1</span>You <span class="saved" id="savedTag"></span></span><span class="chev">&#9656;</span></summary>
@@ -535,6 +612,10 @@
           <label>Kit accent colour</label>
           <div class="swatches" id="swatches"></div>
           <div class="hint">This changes only the kit a brand sees, never this editor.</div>
+          <label style="margin-top:17px">Use your profile on any device</label>
+          <button class="btn w s" type="button" onclick="copyProfileLink()">Copy my profile link</button>
+          <div class="hint">Bookmark it or save it in your notes. Opening it on a phone, laptop or in-app browser fills
+            everything in for you, so you never type your details twice. Update your numbers, then copy it again.</div>
           <button class="btn g w s" type="button" style="margin-top:14px"
             onclick="clearSaved()">Clear everything saved on this device</button>
         </div>
@@ -560,6 +641,13 @@
         <div class="sec" id="secAud"><h3>Audience</h3><div class="aud" id="kAud"></div></div>
         <div class="sec hide" id="secWork"><h3>Recent work</h3><div class="works" id="kWorks"></div></div>
         <div class="sec hide" id="secBrands"><h3>Worked with</h3><div class="brands" id="kBrands"></div></div>
+
+        <div class="sec hide deal" id="secDeal">
+          <h3 id="kDealH">Proposal</h3>
+          <div class="for" id="kDealFor"></div>
+          <div id="kDeal"></div>
+          <div class="meta" id="kDealMeta"></div>
+        </div>
 
         <div class="sec hide" id="secRates">
           <h3>Rate card</h3>
@@ -844,7 +932,7 @@ function render(){
     incl.push('<b>Ads can run from my handle</b>')}
 
   var rates=readRates().filter(function(r){return r.l.trim()&&n(r.v)});
-  $('secRates').classList.toggle('hide',!rates.length);
+  $('secRates').classList.toggle('hide',!rates.length||(dealOn()&&!$('dShowCard').checked));
   $('kRates').innerHTML=rates.map(function(r){
     var base=n(r.v),run=base,bd='';
     if(adds.length){
@@ -892,6 +980,8 @@ function render(){
       $('kInit').style.display='flex'}
     else{$('kInit').style.display='none'}}
 
+  renderDeal();
+  if(VIEWING&&dealOn())document.title=($('dBrand').value?'Proposal for '+$('dBrand').value+' \u2014 ':'')+($('name').value||'Media kit');
   if(!VIEWING)saveLocal();
 }
 function todayStr(){return new Date().toLocaleDateString('en-GB',
@@ -904,6 +994,7 @@ function snapshot(){
   CHECKS.forEach(function(k){o.c[k]=$(k).checked});
   SELS.forEach(function(k){o.s[k]=$(k).value});
   if(PHOTO)o.p=PHOTO;
+  o.d=dealPack();o.b=$('brief').value;
   return o;
 }
 function restore(o){
@@ -916,6 +1007,8 @@ function restore(o){
   if(o.p)PHOTO=o.p;
   if(o.a)ACC=o.a;
   if(o.t)THEME=o.t;
+  if(o.d)applyDeal(o.d);
+  if(o.b)$('brief').value=o.b;
   return true;
 }
 var saveT;
@@ -958,7 +1051,7 @@ function unb64url(str){
 function trimTail(a){var b=a.slice();
   while(b.length&&(b[b.length-1]===''||b[b.length-1]==null))b.pop();return b}
 
-function packArray(){
+function packArray(profile){
   var f=trimTail(FIELDS.map(function(k){return $(k)?String($(k).value||'').trim():''}));
   var w=readWorks().filter(function(x){return String(x.t).trim()})
         .map(function(x){return trimTail([x.t,x.l,x.v])});
@@ -971,7 +1064,8 @@ function packArray(){
            ACC===ACCENTS[0]?'':ACC,
            THEME==='dark'?'':THEME,
            todayStr(),
-           (PHOTO&&$('inclPhoto').checked)?PHOTO:''];
+           (PHOTO&&$('inclPhoto').checked)?PHOTO:'',
+           profile?'':dealPack()];
   return trimTail(out);
 }
 function applyArray(a){
@@ -991,11 +1085,12 @@ function applyArray(a){
   THEME=a[5]||'dark';
   UPDATED=a[6]||'';
   PHOTO=a[7]||'';
+  if(a[8])applyDeal(a[8]);
   return true;
 }
 
-function encodeKit(){
-  var json=JSON.stringify(packArray());
+function encodeKit(profile){
+  var json=JSON.stringify(packArray(profile));
   var raw=new TextEncoder().encode(json);
   if(!window.CompressionStream)return Promise.resolve('r'+b64url(raw));
   return new Response(new Blob([raw]).stream()
@@ -1102,6 +1197,308 @@ function close_(id){$(id).classList.remove('on')}
 var tt;function toast(m){var e=$('toast');e.textContent=m;e.classList.add('on');
   clearTimeout(tt);tt=setTimeout(function(){e.classList.remove('on')},2400)}
 
+/* ============================================================
+   BRAND BRIEF → QUOTE
+   Paste a brand's message; readBrief() pulls out what they want with plain
+   pattern matching (no AI, no server — it runs in the browser like the rest).
+   Everything it finds lands in editable fields, so a wrong guess is one tap
+   to fix. The quote travels inside the share link as the 9th array slot.
+   ============================================================ */
+var DTYPES=[ /* order matters: UGC first so "UGC reel" isn't also counted as a reel */
+  {k:'ugcp',label:'UGC photo set',re:/\bugc\s+(?:photos?|images?|stills?|pictures?)\b/gi,row:/ugc.*photo/i,m:0.5},
+  {k:'ugcv',label:'UGC video',re:/\bugc(?:\s+(?:videos?|reels?|content|clips?|ads?))?\b/gi,row:/ugc(?!.*photo)/i,m:0.9},
+  {k:'yt',label:'YouTube integration',re:/\b(?:youtube|yt)\s+(?:videos?|integrations?)\b|\bdedicated\s+(?:youtube\s+)?videos?\b/gi,row:/youtube(?!.*short)/i,m:1.5},
+  {k:'short',label:'YouTube Short',re:/\b(?:youtube\s+|yt\s+)?shorts\b/gi,row:/short/i,m:0.7},
+  {k:'live',label:'Instagram Live',re:/\b(?:insta(?:gram)?\s+|ig\s+)?live\s+(?:sessions?|streams?)\b|\binsta(?:gram)?\s+lives?\b/gi,row:/\blive\b/i,m:0.8},
+  {k:'carousel',label:'Carousel post',re:/\bcarousels?(?:\s+posts?)?\b/gi,row:/carousel/i,m:0.7},
+  {k:'reel',label:'Reel',re:/\b(?:insta(?:gram)?\s+|ig\s+)?reels?\b/gi,row:/reel/i,m:1},
+  {k:'story',label:'Story',re:/\b(?:insta(?:gram)?\s+|ig\s+)?(?:stor(?:y|ies)(?:\s+frames?)?|story\s+sets?)\b/gi,row:/stor(y|ies)/i,m:0.4/3},
+  {k:'static',label:'Static post',re:/\b(?:static|feed|image|photo|grid)\s+posts?\b|\bstatics?\b/gi,row:/static|feed post|photo post/i,m:0.55}
+];
+var NUMW={a:1,an:1,one:1,single:1,two:2,couple:2,pair:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,twelve:12,fifteen:15,twenty:20};
+var NOT_BRAND=/^(i|we|you|our|your|the|this|that|hi|hello|hey|team|instagram|ig|india|bangalore|bengaluru|mumbai|delhi|ugc|reels?|stories|youtube|linkedin|whatsapp|gmail|dm|email|mallika|mallikaux|creator|influencer|marketing|brand|brands|collab|collaboration)$/i;
+
+function numFrom(t){t=String(t||'').toLowerCase().trim();if(/^\d+$/.test(t))return parseInt(t,10);return NUMW[t]||0}
+function monthsIn(t){
+  if(!t)return 0;
+  if(/perpetu|lifetime|forever|unlimited|in perpetuity/i.test(t))return 999;
+  var m=t.match(/(\d+|one|two|three|four|six|nine|twelve)\s*[-\s]?(months?|mos?\b|mnths?|years?|yrs?)/i);
+  if(!m)return 0;var q=numFrom(m[1]);return /^y/i.test(m[2])?q*12:q;
+}
+function near(text,re,span){ /* text right after the first match of re */
+  var m=re.exec(text);if(!m)return '';return text.slice(m.index,m.index+(span||90));
+}
+function moneyIn(str){
+  var m=String(str).match(/(?:₹|rs\.?|inr|\$|usd|aed|€|£)\s?([\d,]+(?:\.\d+)?)\s?(k|l|lakh|lakhs|lac|lacs)?\b|([\d,]+(?:\.\d+)?)\s?(k|l|lakh|lakhs|lac|lacs)?\s?(?:inr|rs\b|rupees|usd|dollars|aed)/i);
+  if(!m)return 0;var v=parseFloat((m[1]||m[3]).replace(/,/g,''));var u=(m[2]||m[4]||'').toLowerCase();
+  if(u==='k')v*=1e3;else if(u)v*=1e5;return v;
+}
+
+function parseBrief(raw){
+  var t=' '+String(raw||'').replace(/\r/g,'')+' ',low=t.toLowerCase(),out={items:[],flags:[],raw:raw};
+  /* deliverables */
+  var taken=[];
+  DTYPES.forEach(function(d){
+    var re=new RegExp(d.re.source,'gi'),m,best=0,seen=false;
+    while((m=re.exec(t))){
+      var s=m.index,e=s+m[0].length;
+      if(taken.some(function(r){return s<r[1]&&e>r[0]}))continue;
+      taken.push([s,e]);seen=true;
+      var before=t.slice(Math.max(0,s-26),s);
+      var q=before.match(/(\d+|an?|one|single|two|couple(?:\s+of)?|pair(?:\s+of)?|three|four|five|six|seven|eight|nine|ten|twelve|fifteen|twenty)\s*(?:x\s*|×\s*)?(?:(?:dedicated|instagram|insta|ig|short|static|feed|video|collab(?:orative)?|more|additional|separate|different|quick|high[- ]quality)\s+)*$/i);
+      var after=t.slice(e,e+14).match(/^\s*(?:x|×)\s*(\d+)|^\s*\(\s*x?\s*(\d+)\s*\)/i);
+      var qty=q?numFrom(q[1].replace(/\s+of$/i,'')):after?parseInt(after[1]||after[2],10):0;
+      if(qty>best)best=qty;
+    }
+    if(seen)out.items.push({k:d.k,label:d.label,q:best||1});
+  });
+  /* "post" with an explicit count and no type → static post */
+  if(!out.items.some(function(i){return i.k==='static'||i.k==='carousel'})){
+    var pm=t.match(/\b(\d+|an?|one|two|three|four|five)\s+(?:instagram\s+|insta\s+|ig\s+|collab\s+)?posts?\b/i);
+    if(pm)out.items.push({k:'static',label:'Static post',q:numFrom(pm[1])});
+  }
+  /* add-ons */
+  var useRe=/usage\s+rights?|paid\s+(?:ads?|media|usage|promotion|amplification)|ad\s+usage|run\s+(?:it|them|the\s+\w+)\s+as\s+(?:an?\s+)?ads?|boost(?:ing|ed)?|use\s+(?:it|them|the\s+content)\s+(?:on|in|for)\s+(?:our|their)\s+(?:ads|website|channels|socials|platforms)|repurpose|content\s+rights|licen[cs]ing/i;
+  if(useRe.test(t)){var um=monthsIn(near(t,new RegExp(useRe.source,'i'),110));out.usage=um||3;out.usageGuess=!um;}
+  var exRe=/exclusiv\w*|non[-\s]?compete|competitor|competing\s+brands?/i;
+  if(exRe.test(t)){var em=monthsIn(near(t,new RegExp(exRe.source,'i'),110));out.excl=em||3;out.exclGuess=!em;}
+  if(/whitelist\w*|spark\s+ads?|partnership\s+ads?|branded\s+content\s+ads?|creator\s+licen[cs]ing|(?:from|through|via)\s+your\s+(?:handle|account|profile)/i.test(t))out.white=true;
+  if(/\bbarter\b|gift(?:ed|ing)?\b|in\s+exchange\s+for|free\s+products?|complimentary|pr\s+(?:box|package|kit|hamper)|no\s+budget|unpaid|product\s+(?:only|in\s+exchange)/i.test(t))out.barter=true;
+  /* budget */
+  var bm=t.match(/(?:budget|pay|paying|offer(?:ing)?|compensation|fee|remuneration|amount|range)[^.\n]{0,50}/i);
+  out.budget=bm?moneyIn(bm[0]):0;
+  if(!out.budget&&bm){var bare=bm[0].match(/(\d[\d,]*(?:\.\d+)?)\s?(k|l|lakh|lakhs|lac|lacs)\b|(\d{1,3}(?:,\d{2,3})+|\d{4,})/i);
+    if(bare){var bv=parseFloat((bare[1]||bare[3]).replace(/,/g,''));var bu=(bare[2]||'').toLowerCase();
+      out.budget=bu==='k'?bv*1e3:bu?bv*1e5:bv}}
+  if(!out.budget)out.budget=moneyIn(t);
+  /* who */
+  var cm=t.match(/\b(?:[Ii]'?m|[Ii]\s+am|[Tt]his\s+is|[Mm]y\s+name\s+is|[Mm]yself)\s+([A-Z][a-z]+)\b/)||
+         t.match(/\n\s*(?:best|regards|thanks|thank\s+you|cheers|warm(?:est)?\s+regards|kind\s+regards|best\s+regards)[,!.]?\s*\n+\s*([A-Z][a-z]+)/i);
+  if(cm&&!NOT_BRAND.test(cm[1]))out.contact=cm[1];
+  var brandPats=[/\b(?:from|at|with|representing|on\s+behalf\s+of)\s+(?:the\s+)?(?:[Tt]eam\s+)?([A-Z][\w&.'’-]*(?:\s+[A-Z][\w&.'’-]*){0,2})/g,
+                 /\b[Tt]eam\s+([A-Z][\w&.'’-]*(?:\s+[A-Z][\w&.'’-]*){0,2})/g,/\b([A-Z][\w&.'’-]+)\s+(?:[Tt]eam|x\s+you)\b/g,
+                 /\b(?:we\s+are|we're)\s+([A-Z][\w&.'’-]*(?:\s+[A-Z][\w&.'’-]*){0,2})/g];
+  for(var i=0;i<brandPats.length&&!out.brand;i++){var bmm;
+    while((bmm=brandPats[i].exec(t))){
+      var ws=[];bmm[1].split(/\s+/).some(function(w){var stop=/[.,!?;:]$/.test(w);w=w.replace(/[.,!?;:'’]+$/,'');
+        if(w&&!NOT_BRAND.test(w))ws.push(w);else if(ws.length)return true;return stop});
+      var cand=ws.join(' ');
+      if(cand&&cand.length>1&&cand!==out.contact){out.brand=cand;break}
+    }}
+  /* what for */
+  var pm2=t.match(/\b(?:launch(?:ing)?|promote|promoting|campaign\s+for|feature|featuring|showcase|showcasing)\s+(?:of\s+)?(?:our\s+|the\s+|their\s+|a\s+)?(?:new\s+|latest\s+|upcoming\s+)?([^.,!?\n]{3,42})/i);
+  if(pm2)out.campaign=pm2[1].replace(/\s+(?:on|with|in|for|and|through|via)\s*$/i,'').trim();
+  /* when */
+  var tm=t.match(/\b(?:by|before|deadline|go(?:es)?\s+live|going\s+live|live\s+(?:on|by)|launch(?:es|ing)?\s+on|post(?:ed)?\s+(?:on|by)|timeline|tat|turnaround)\b[^.\n!?]{2,44}/i);
+  if(tm)out.time=tm[0].trim();
+  return out;
+}
+
+/* unit price for a deliverable type: a matching rate-card row first, then an
+   estimate from the reel rate so nothing ever comes out blank */
+function unitFor(k){
+  var d=DTYPES.filter(function(x){return x.k===k})[0];if(!d)return 0;
+  var rows=readRates().filter(function(r){return r.l.trim()&&n(r.v)});
+  var hit=rows.filter(function(r){
+    if(!d.row.test(r.l))return false;
+    if(k==='reel'&&/\+|stor|ugc/i.test(r.l))return false;      /* "1 reel + 2 stories" isn't a reel */
+    if(k==='story'&&/reel/i.test(r.l))return false;
+    if(k!=='ugcv'&&k!=='ugcp'&&/ugc/i.test(r.l))return false;
+    return true})[0];
+  if(hit){var v=n(hit.v),fr=hit.l.match(/(\d+)\s*(?:frames?|stories)/i);
+    if(k==='story'&&fr&&+fr[1]>1)v=v/(+fr[1]);
+    return Math.round(v/50)*50}
+  var reel=rows.filter(function(r){return /reel/i.test(r.l)&&!/\+|stor|ugc/i.test(r.l)})[0];
+  var base=reel?n(reel.v):(n($('followers').value)/1000)*(n($('perk').value)||curInfo()[3]);
+  return base?Math.max(100,Math.round(base*d.m/100)*100):0;
+}
+
+function addItem(q,label,unit){
+  var d=document.createElement('div');d.className='itemRow';
+  d.innerHTML='<div><label>Qty</label><input class="iq" inputmode="numeric" value="'+esc(q==null?1:q)+'"></div>'+
+    '<div><label>Deliverable</label><input class="il" placeholder="e.g. Reel" value="'+esc(label||'')+'"></div>'+
+    '<div><label>Each</label><input class="iu" inputmode="numeric" placeholder="0" value="'+esc(unit==null?'':unit)+'"></div>'+
+    '<button class="rm" type="button" title="Remove" onclick="this.closest(\'.itemRow\').remove();render()">&times;</button>';
+  $('dItems').appendChild(d);
+  d.querySelectorAll('input').forEach(function(i){i.addEventListener('input',render)});
+  $('dealBox').classList.remove('hide');
+  render();
+}
+function readItems(){return [].map.call(document.querySelectorAll('#dItems .itemRow'),function(e){
+  return {q:e.querySelector('.iq').value,l:e.querySelector('.il').value,u:e.querySelector('.iu').value}})}
+function liveItems(){return readItems().filter(function(i){return i.l.trim()&&n(i.u)})}
+function dealOn(){return liveItems().length>0}
+
+var LAST_BRIEF=null;
+function setSel(id,months,map){ /* pick the closest option at or above the months asked for */
+  var best=map[map.length-1];
+  for(var i=0;i<map.length;i++){if(months<=map[i][0]){best=map[i];break}}
+  $(id).value=best[1];return best[0];
+}
+function readBrief(){
+  var txt=$('brief').value.trim();
+  if(!txt){toast('Paste the brand’s message first');$('brief').focus();return}
+  var b=parseBrief(txt);LAST_BRIEF=b;
+  $('dItems').innerHTML='';['dBrand','dContact','dCampaign','dTime','dDisc'].forEach(function(k){$(k).value=''});
+  if(!b.items.length)b.items=[{k:'reel',label:'Reel',q:1,guess:true}];
+  b.items.forEach(function(i){addItem(i.q,i.label,unitFor(i.k)||'')});
+  if(b.brand)$('dBrand').value=b.brand;
+  if(b.contact)$('dContact').value=b.contact;
+  if(b.campaign)$('dCampaign').value=b.campaign;
+  if(b.time)$('dTime').value=b.time;
+  if(!$('dValid').value)$('dValid').value='14 days';
+  /* add-ons reuse the switches in section 5 so the rate card and quote agree */
+  $('optAds').checked=!!b.usage;$('optExcl').checked=!!b.excl;$('optWhite').checked=!!b.white;
+  if(b.usage)b.usageQ=setSel('adsDur',b.usage,[[1,'1.25'],[3,'1.5'],[6,'1.8'],[12,'2.2']]);
+  if(b.excl)b.exclQ=setSel('exclDur',b.excl,[[3,'1.3'],[6,'1.6']]);
+
+  var ch=[];
+  b.items.forEach(function(i){ch.push(['',i.q+' × '+i.label+(i.guess?' (nothing specific found — guessed)':'')])});
+  if(b.usage)ch.push(['','Paid usage, '+(b.usage===999?'perpetual → quoted as 1 year':b.usageQ+' mo')+(b.usageGuess?' (no duration given)':'')]);
+  if(b.excl)ch.push(['','Exclusivity, '+b.exclQ+' mo'+(b.exclGuess?' (no duration given)':'')]);
+  if(b.white)ch.push(['','Whitelisting / ads from your handle']);
+  if(b.budget)ch.push(['mute','Their budget: '+money(b.budget)]);
+  if(b.barter)ch.push(['warn','Sounds like a barter / gifting offer']);
+  if(b.usage===999)ch.push(['warn','They asked for perpetual usage — worth pushing back']);
+  $('found').innerHTML='<span class="chip mute">Found in their message</span>'+
+    ch.map(function(c){return '<span class="chip '+c[0]+'">'+esc(c[1])+'</span>'}).join('');
+  $('dealBox').classList.remove('hide');
+  render();writeReply(true);
+  toast('Quote built — check the numbers and edit anything');
+}
+function clearDeal(){
+  $('dItems').innerHTML='';['dBrand','dContact','dCampaign','dDisc','dValid','dTime','dReply','brief'].forEach(function(k){$(k).value=''});
+  $('found').innerHTML='';$('dealBox').classList.add('hide');LAST_BRIEF=null;REPLY_TOUCHED=false;
+  $('optAds').checked=$('optExcl').checked=$('optWhite').checked=false;
+  render();
+}
+
+/* same add-on maths as the rate card, so the two never disagree */
+function addOnList(){
+  var adds=[];
+  if($('optAds').checked){var a=n($('adsDur').value);
+    adds.push(['Paid ad usage, '+$('adsDur').options[$('adsDur').selectedIndex].text.replace(/^For /,'').replace(/\s*\(.*\)/,''),a])}
+  if($('optExcl').checked){var x=n($('exclDur').value);
+    adds.push(['No competitor work, '+$('exclDur').options[$('exclDur').selectedIndex].text.replace(/^For /,'').replace(/\s*\(.*\)/,''),x])}
+  if($('optWhite').checked)adds.push(['Ads from my handle',1.3]);
+  return adds;
+}
+function dealMath(){
+  var items=liveItems().map(function(i){var q=Math.max(1,n(i.q)||1),u=n(i.u);return {q:q,l:i.l.trim(),u:u,t:q*u}});
+  var sub=items.reduce(function(s,i){return s+i.t},0),run=sub,lines=[];
+  addOnList().forEach(function(a){var add=run*(a[1]-1);run+=add;lines.push([a[0],add])});
+  var disc=Math.min(90,Math.max(0,n($('dDisc').value))),dAmt=disc?run*disc/100:0;
+  return {items:items,sub:sub,adds:lines,disc:disc,dAmt:dAmt,total:Math.round(run-dAmt)};
+}
+function renderDeal(){
+  var on=dealOn();
+  $('secDeal').classList.toggle('hide',!on);
+  if(!on){$('dCalc').innerHTML='Add at least one deliverable with a price.';return}
+  var m=dealMath(),brand=$('dBrand').value.trim(),camp=$('dCampaign').value.trim();
+  $('kDealH').textContent=brand?'Proposal for '+brand:'Proposal';
+  $('kDealFor').innerHTML=camp?'For <b>'+esc(camp)+'</b>':'';
+  var h=m.items.map(function(i){
+    return '<div class="dl"><span><span class="q">'+i.q+' ×</span> '+esc(i.l)+
+      (i.q>1?' <span class="q">@ '+money(i.u)+'</span>':'')+'</span><span class="amt">'+money(i.t)+'</span></div>'}).join('');
+  if(m.adds.length||m.disc){
+    h+='<div class="dl sub"><span>Subtotal</span><span class="amt">'+money(m.sub)+'</span></div>';
+    m.adds.forEach(function(a){h+='<div class="dl sub"><span>'+esc(a[0])+'</span><span class="amt">+'+money(a[1])+'</span></div>'});
+    if(m.disc)h+='<div class="dl sub"><span>Discount ('+m.disc+'%)</span><span class="amt">−'+money(m.dAmt)+'</span></div>';
+  }
+  h+='<div class="dl tot"><span>Total</span><span class="amt">'+money(m.total)+'</span></div>';
+  $('kDeal').innerHTML=h;
+  var meta=[];
+  if(!m.adds.length)meta.push('<b>Organic posting only.</b> Paid usage, exclusivity and whitelisting can be added.');
+  if(m.items.some(function(i){return /ugc/i.test(i.l)}))meta.push('<b>UGC</b> is delivered for you to post; it isn’t published on my page.');
+  if($('dTime').value.trim())meta.push('<b>Timeline:</b> '+esc($('dTime').value.trim()));
+  if($('terms').value.trim())meta.push('<b>Payment:</b> '+esc($('terms').value.trim()));
+  if($('dValid').value.trim())meta.push('<b>Quote valid for</b> '+esc($('dValid').value.trim()));
+  $('kDealMeta').innerHTML=meta.join('<br>');
+  /* editor-side sanity line */
+  var c='Quote total <b>'+money(m.total)+'</b>';
+  var b=LAST_BRIEF&&LAST_BRIEF.budget;
+  if(b){var diff=m.total-b;
+    c+=' · their budget '+money(b)+(diff>0?' — you’re '+money(diff)+' above it':diff<0?' — '+money(-diff)+' under it, you could ask for more':' — a match')}
+  if(LAST_BRIEF&&LAST_BRIEF.barter)c+='<br>They mentioned gifting/barter. The reply below is written as a paid quote; edit it if you’d rather accept product.';
+  $('dCalc').innerHTML=c;
+  if(!REPLY_TOUCHED)writeReply(false);
+}
+
+var REPLY_TOUCHED=false;
+function writeReply(force){
+  if(!force&&(REPLY_TOUCHED||document.activeElement===$('dReply')))return;
+  if(!dealOn()){if(force)$('dReply').value='';return}
+  var m=dealMath(),who=$('dContact').value.trim(),brand=$('dBrand').value.trim(),
+      camp=$('dCampaign').value.trim(),me=($('name').value||'').trim().split(/\s+/)[0];
+  var L=[];
+  L.push('Hi '+(who||'there')+',');L.push('');
+  L.push('Thank you for reaching out'+(brand?' — I’d love to work with '+brand:'')+'!'+
+    (LAST_BRIEF&&LAST_BRIEF.barter?' I work on paid collaborations, so here’s my quote'+(camp?' for your '+camp:'')+':':
+     ' Here’s my quote'+(camp?' for your '+camp:'')+':'));
+  L.push('');
+  m.items.forEach(function(i){L.push('• '+i.q+' × '+i.l+' — '+money(i.t))});
+  m.adds.forEach(function(a){L.push('• '+a[0]+' — +'+money(a[1]))});
+  if(m.disc)L.push('• Discount ('+m.disc+'%) — −'+money(m.dAmt));
+  L.push('');L.push('Total: '+money(m.total));
+  if(!m.adds.length)L.push('This covers organic posting on my page. Paid usage or exclusivity can be added if you need them.');
+  if($('terms').value.trim())L.push('Payment: '+$('terms').value.trim());
+  if($('dTime').value.trim())L.push('Timeline: '+$('dTime').value.trim());
+  if($('dValid').value.trim())L.push('This quote is valid for '+$('dValid').value.trim()+'.');
+  L.push('');L.push('My media kit, with my numbers and past work: [media kit link]');L.push('');
+  L.push('Happy to adjust the scope to fit what you have in mind. Looking forward to hearing from you!');
+  if(me){L.push('');L.push(me)}
+  $('dReply').value=L.join('\n');
+  if(force)REPLY_TOUCHED=false;
+}
+function copyReply(){
+  var txt=$('dReply').value;if(!txt.trim()){toast('Build a quote first');return}
+  if(!$('name').value.trim()||!$('handle').value.trim()){toast('Add your name and handle first');$('s1').open=true;return}
+  encodeKit().then(function(code){
+    var url=location.origin+location.pathname+'#k='+code;
+    var out=/\[media kit link\]/.test(txt)?txt.replace(/\[media kit link\]/g,url):txt+'\n\n'+url;
+    var done=function(){toast('Reply copied, with your kit link')};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(out).then(done,function(){fallbackCopy(out);done()});
+    else{fallbackCopy(out);done()}
+  });
+}
+function fallbackCopy(t){try{var a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';
+  document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}catch(e){}}
+
+function dealPack(){
+  if(!dealOn())return '';
+  return trimTail([$('dBrand').value.trim(),$('dContact').value.trim(),$('dCampaign').value.trim(),
+    liveItems().map(function(i){return [i.q,i.l,i.u]}),$('dDisc').value.trim(),$('dTime').value.trim(),
+    $('dValid').value.trim(),$('dShowCard').checked?1:'']);
+}
+function applyDeal(d){
+  if(!d||!d.length)return;
+  $('dBrand').value=d[0]||'';$('dContact').value=d[1]||'';$('dCampaign').value=d[2]||'';
+  $('dItems').innerHTML='';(d[3]||[]).forEach(function(i){addItem(i[0],i[1],i[2])});
+  $('dDisc').value=d[4]||'';$('dTime').value=d[5]||'';$('dValid').value=d[6]||'';$('dShowCard').checked=!!d[7];
+}
+
+/* ---------- profile link: your details on any device ---------- */
+function copyProfileLink(){
+  if(!$('name').value.trim()){toast('Fill in your details first');$('s1').open=true;return}
+  var keep=$('inclPhoto').checked;$('inclPhoto').checked=true;   /* the profile link always carries the photo */
+  var p=encodeKit(true);$('inclPhoto').checked=keep;
+  p.then(function(code){
+    var url=location.origin+location.pathname+'#me='+code;
+    var done=function(){toast('Profile link copied — bookmark it')};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(url).then(done,function(){fallbackCopy(url);done()});
+    else{fallbackCopy(url);done()}
+  });
+}
+function openProfileLink(){
+  var m=location.hash.match(/[#&]me=(.+)$/);if(!m)return false;
+  decodeKit(m[1]).then(function(arr){
+    applyArray(arr);UPDATED='';render();
+    try{history.replaceState(null,'',location.pathname+location.search)}catch(e){location.hash=''}
+    toast('Your profile is filled in and saved on this device');
+  })['catch'](function(){toast('That profile link looks damaged')});
+  return true;
+}
+
 /* ---------- boot ---------- */
 function step(nm,fn){try{fn()}catch(e){
   if(window.console)console.error('['+nm+']',e);
@@ -1128,8 +1525,9 @@ step('swatches',function(){
 step('shared or saved',function(){
   if(openSharedKit())return;
   loadLocal();
+  openProfileLink();
 });
-window.addEventListener('hashchange',function(){try{openSharedKit()}catch(e){}});
+window.addEventListener('hashchange',function(){try{openSharedKit()||openProfileLink()}catch(e){}});
 
 step('gate',function(){
   if(VIEWING||GATE==='off')return;          /* brands opening a kit never see this */
@@ -1182,6 +1580,10 @@ function markSw(){[].forEach.call(document.querySelectorAll('#swatches .sw2'),fu
   b.setAttribute('aria-pressed',b.getAttribute('data-c')===ACC)})}
 function markTh(){[].forEach.call(document.querySelectorAll('#themes .th'),function(b){
   b.setAttribute('aria-pressed',b.getAttribute('data-t')===THEME)})}
+step('quote',function(){
+  $('dReply').addEventListener('input',function(){REPLY_TOUCHED=true},true);
+  if(dealOn())$('dealBox').classList.remove('hide');
+});
 step('marks',function(){markSw();markTh();$('perk').placeholder=String(curInfo()[3])});
 step('first render',render);
 </script>
